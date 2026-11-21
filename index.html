@@ -30,12 +30,16 @@ main{padding-top:2rem;padding-bottom:5rem;min-height:70vh}
 .hero::before{content:"";position:absolute;right:-6%;top:0;width:clamp(150px,32vw,300px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent),transparent 68%);opacity:.5;pointer-events:none}
 .hero>*{position:relative}
 .sub{font-size:1.15rem;font-style:italic;color:var(--ink);max-width:30em;margin:0}
-.menu a{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.6rem 0;border-top:1px solid var(--line);font-size:clamp(.85rem,2.2vw,.92rem);letter-spacing:0;color:var(--ink);text-decoration:none;transition:color .2s,padding .2s}
+.menu a{display:grid;grid-template-columns:minmax(8.5rem,11rem) 1fr auto;align-items:baseline;gap:1rem;padding:.6rem 0;border-top:1px solid var(--line);font-size:clamp(.85rem,2.2vw,.92rem);letter-spacing:0;color:var(--ink);text-decoration:none;transition:color .2s,padding .2s}
 .menu a:last-child{border-bottom:1px solid var(--line)}
 .menu a:hover,.menu a:focus-visible{color:var(--accent);padding-left:.6rem}
 .menu small{font-size:.75rem;letter-spacing:0;color:var(--mute);text-align:right}
+.hl{font-size:.85rem;line-height:1.5;letter-spacing:0;color:var(--accent);text-align:center;min-width:0;max-height:3em;overflow:hidden}
 .entry{padding:1.6rem 0;border-top:1px solid var(--line)}
 .entry p{max-width:36em;margin:.8rem 0 0;white-space:pre-line}
+.entry figure{margin:1.25rem 0 0;max-width:36em}
+.entry img{display:block;width:100%;height:auto;border-radius:12px}
+.entry figcaption{margin-top:.5rem}
 .meta{font-size:.85rem;color:var(--mute)}
 button,.btn{font:600 .95rem Sora,sans-serif;cursor:pointer;border:0;border-radius:999px;padding:.7rem 1.4rem;background:var(--accent);color:var(--on);text-decoration:none;display:inline-block}
 button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
@@ -55,7 +59,7 @@ input:focus,select:focus{border-color:var(--accent)}
 .note{color:var(--mute);font-size:.9rem;margin:0 0 1.75rem}
 footer{border-top:1px solid var(--line);color:var(--mute);font-size:.85rem}
 footer .wrap{padding-top:1.25rem;padding-bottom:1.25rem}
-@media (max-width:560px){.menu small{display:none}}
+@media (max-width:560px){.menu small{display:none}.menu a{grid-template-columns:minmax(6.5rem,8.5rem) 1fr}.hl{text-align:right}}
 @media (prefers-reduced-motion:reduce){.menu a{transition:none}}
 </style>
 </head>
@@ -91,6 +95,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl = u => /^https?:\/\//i.test(u) ? u : "#";
 const SP = [["#7A1F2B","#fff"],["#1F4D3A","#fff"],["#D9A21B","#101828"],["#274690","#fff"],["#5B2A6E","#fff"]];
+const HL_MAX = 10; /* batas maksimal judul terbaru di halaman depan; yang tampil menyesuaikan lebar tempat */
 const demo = !FIREBASE_CONFIG;
 let user = null, db = null, auth = null, tab = "buku";
 
@@ -123,16 +128,40 @@ function route() {
   const p = (location.hash || "#beranda").slice(1);
   $("#nav").innerHTML = PAGES.map(([k, v]) => `<a href="#${k}" ${k === p ? 'aria-current="page"' : ""}>${v}</a>`).join("");
   const v = $("#view");
-  const entry = (i, t, meta, body) => `<article class="entry" style="--c:${SP[i % 5][0]}"><div><h3>${esc(t)}</h3><div class="meta">${meta}</div><p>${esc(body)}</p></div></article>`;
-  if (p === "buku") v.innerHTML = `<h2>Ringkasan buku</h2>` + CONTENT.books.map((b, i) => entry(i, b.title, `${esc(b.author)} · dibaca ${esc(b.date)}`, b.text)).join("");
-  else if (p === "opini") v.innerHTML = `<h2>Opini</h2>` + CONTENT.opinions.map((o, i) => entry(i + 1, o.title, `${esc(o.date)} · Sumber: ${esc(o.source)}`, o.text)).join("");
+  const entry = (i, t, meta, body, img, cap) => `<article class="entry" style="--c:${SP[i % 5][0]}"><div><h3>${esc(t)}</h3><div class="meta">${meta}</div><p>${esc(body)}</p>${img ? `<figure><img src="${esc(img)}" alt="${esc(cap || t)}" loading="lazy">${cap ? `<figcaption class="meta">${esc(cap)}</figcaption>` : ""}</figure>` : ""}</div></article>`;
+  if (p === "buku") v.innerHTML = `<h2>Ringkasan buku</h2>` + CONTENT.books.map((b, i) => entry(i, b.title, `${esc(b.author)} · dibaca ${esc(b.date)}`, b.text, b.image, b.caption)).join("");
+  else if (p === "opini") v.innerHTML = `<h2>Opini</h2>` + CONTENT.opinions.map((o, i) => entry(i + 1, o.title, `${esc(o.date)} · Sumber: ${esc(o.source)}`, o.text, o.image, o.caption)).join("");
   else if (p === "video") v.innerHTML = `<h2>Video</h2>` + CONTENT.videos.map((x, i) => `<article class="entry" style="--c:${SP[(i + 2) % 5][0]}"><div><h3>${esc(x.title)}</h3><p>${esc(x.note)}</p><p><a class="btn" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">Tonton video</a></p></div></article>`).join("");
   else if (p === "aplikasi") renderApp();
   else if (p === "privasi") v.innerHTML = `<h2>Kebijakan privasi</h2><p>Qibar Mandiri hanya menyimpan nama, email Google, dan catatan yang Anda tulis sendiri. Data hanya bisa dilihat oleh akun Anda dan tidak dibagikan ke pihak lain. Anda dapat meminta data Anda dihapus kapan saja dengan menghubungi pemilik web.</p>`;
   else {
-    const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit"],["Opini","#opini","Kabar dan kasus yang sedang ramai"],["Video","#video","Versi tontonan"],["Katalog Buku","katalog-buku.html","Cek sebelum membeli"],["Catatan","#aplikasi","Belanja dan kegiatan","catatan"]];
-    v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.6rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><small>${m[2]}</small></a>`).join("")}</nav>`;
+    const newest = arr => [...arr].sort((x, y) => String(y.date || "").localeCompare(String(x.date || ""))).slice(0, HL_MAX).map(x => x.title);
+    const hb = newest(CONTENT.books), ho = newest(CONTENT.opinions), hv = newest(CONTENT.videos);
+    const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit","","buku",hb],["Opini","#opini","Kabar dan kasus yang sedang ramai","","opini",ho],["Video","#video","Versi tontonan","","video",hv],["Katalog Buku","katalog-buku.html","Cek sebelum membeli","","katalog",[]],["Catatan","#aplikasi","Belanja dan kegiatan","catatan","catatan",[]]];
+    v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.6rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><span class="hl" id="hl-${m[4]}" data-items="${esc(JSON.stringify(m[5]))}"></span><small>${m[2]}</small></a>`).join("")}</nav>`;
+    fitAll();
+    fillHl();
   }
+}
+
+function fitHl(el) {
+  if (!el) return;
+  let items; try { items = JSON.parse(el.dataset.items || "[]"); } catch (e) { items = []; }
+  el.textContent = items.join(" · ");
+  const over = () => el.scrollHeight > el.clientHeight + 1;
+  while (items.length > 1 && over()) { items.pop(); el.textContent = items.join(" · "); }
+  if (items.length === 1 && over()) { let t = items[0]; while (t.length > 1 && over()) { t = t.slice(0, -2); el.textContent = t.trimEnd() + "…"; } }
+}
+const fitAll = () => document.querySelectorAll(".hl").forEach(fitHl);
+function setHl(id, arr) { const el = $("#hl-" + id); if (el) { el.dataset.items = JSON.stringify(arr); fitHl(el); } }
+
+async function fillHl() {
+  try {
+    if (!demo && !user) return;
+    if (!demo) { const b = await load("katalog"); setHl("katalog", b.slice(-HL_MAX).reverse().map(x => x.judul).filter(Boolean)); }
+    const n = await load("notes"); const open = n.filter(i => !i.done);
+    setHl("catatan", (open.length ? open : n).slice(0, HL_MAX).map(x => x.n));
+  } catch (e) {}
 }
 
 document.addEventListener("click", e => { const a = e.target.closest("[data-tab]"); if (a) tab = a.dataset.tab; });
@@ -167,6 +196,8 @@ async function catatan() {
 
 $("#yr").textContent = new Date().getFullYear();
 window.addEventListener("hashchange", route);
+let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(fitAll, 120); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
 renderAuth(); route();
 </script>
 </body>
