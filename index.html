@@ -1,67 +1,173 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Qibar Mandiri</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
-    body { background: #f8fafc; color: #1e293b; line-height: 1.6; }
-    header { background: #0f172a; color: #ffffff; padding: 1.25rem 8%; display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-size: 1.4rem; font-weight: 700; letter-spacing: 0.5px; color: #38bdf8; }
-    nav a { color: #e2e8f0; text-decoration: none; margin-left: 1.5rem; font-size: 0.95rem; }
-    nav a:hover { color: #38bdf8; }
-    .hero { padding: 5rem 8%; text-align: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; }
-    .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-    .hero p { max-width: 620px; margin: 0 auto 2rem; color: #cbd5e1; font-size: 1.1rem; }
-    .btn { display: inline-block; background: #0284c7; color: white; padding: 0.8rem 1.8rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: 0.2s; }
-    .btn:hover { background: #0369a1; }
-    .section { padding: 4rem 8%; max-width: 1100px; margin: auto; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-    .card { background: white; padding: 1.75rem; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-    .card h3 { margin-bottom: 0.5rem; color: #0f172a; }
-    footer { text-align: center; padding: 2rem; background: #0f172a; color: #94a3b8; font-size: 0.9rem; margin-top: 3rem; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Qibar Mandiri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0E1A;--surface:#111729;--ink:#EAF0FF;--mute:#8C97B5;--line:#232C45;--accent:#8FB4FF;--on:#0A0E1A;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#F5F7FC;--surface:#fff;--ink:#0A0E1A;--mute:#5A6483;--line:#D9DFEE;--accent:#3A5BDB;--on:#fff;color-scheme:light}}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:300 17px/1.75 Sora,system-ui,sans-serif;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);overflow-x:hidden}
+h1,h2,h3{font-weight:300;letter-spacing:-.03em;line-height:1.1;margin:0}
+h1{font-size:clamp(2rem,7vw,3.25rem);letter-spacing:-.04em}
+h2{font-size:clamp(1.8rem,6vw,2.6rem);margin-bottom:2rem}
+h3{font-size:1.4rem;font-weight:600;letter-spacing:-.02em;margin-bottom:.3rem}
+a{color:var(--accent)}
+.wrap{max-width:880px;margin:0 auto;padding:0 1.5rem}
+header .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.75rem;padding-top:1.25rem;padding-bottom:1.25rem}
+.logo{font-weight:600;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+nav.top{display:flex;flex-wrap:wrap;gap:1.25rem;flex:1;font-size:.95rem}
+nav.top a{color:var(--mute);text-decoration:none}
+nav.top a[aria-current="page"]{color:var(--accent)}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+main{padding-top:2rem;padding-bottom:5rem;min-height:70vh}
+.hero{position:relative;padding:1rem 0 1.5rem}
+.hero::before{content:"";position:absolute;right:-6%;top:0;width:clamp(150px,32vw,300px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent),transparent 68%);opacity:.5;pointer-events:none}
+.hero>*{position:relative}
+.sub{font-size:1.15rem;font-style:italic;color:var(--ink);max-width:30em;margin:0}
+.menu a{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.6rem 0;border-top:1px solid var(--line);font-size:clamp(.85rem,2.2vw,.92rem);letter-spacing:0;color:var(--ink);text-decoration:none;transition:color .2s,padding .2s}
+.menu a:last-child{border-bottom:1px solid var(--line)}
+.menu a:hover,.menu a:focus-visible{color:var(--accent);padding-left:.6rem}
+.menu small{font-size:.75rem;letter-spacing:0;color:var(--mute);text-align:right}
+.entry{padding:1.6rem 0;border-top:1px solid var(--line)}
+.entry p{max-width:36em;margin:.8rem 0 0}
+.meta{font-size:.85rem;color:var(--mute)}
+button,.btn{font:600 .95rem Sora,sans-serif;cursor:pointer;border:0;border-radius:999px;padding:.7rem 1.4rem;background:var(--accent);color:var(--on);text-decoration:none;display:inline-block}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.x{background:none;color:var(--mute);padding:.2rem .5rem;font-weight:300}
+input,select{font:300 1rem Sora,sans-serif;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.8rem 1rem;width:100%}
+input:focus,select:focus{border-color:var(--accent)}
+.form{display:grid;gap:.6rem;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin:.9rem 0 1rem}
+.tabs{display:flex;gap:1.5rem;margin:0 0 1.75rem}
+.tabs a{color:var(--mute);text-decoration:none;padding:.3rem 0;border-bottom:2px solid transparent}
+.tabs button{background:none;color:var(--mute);border-radius:0;padding:.3rem 0;border-bottom:2px solid transparent;font-weight:300}
+.tabs button[aria-selected="true"]{color:var(--accent);border-color:var(--accent)}
+.item{display:flex;align-items:center;gap:.9rem;padding:.8rem 0;border-top:1px solid var(--line)}
+.item .grow{flex:1;min-width:0}.item.done .grow{text-decoration:line-through;color:var(--mute)}
+.item input[type=checkbox]{width:1.2rem;height:1.2rem;accent-color:var(--accent)}
+.check{padding:.4rem 0 .4rem 1rem;border-left:3px solid var(--accent);margin:1rem 0}
+.check.warn{border-color:#FFB454;color:#FFB454}
+.note{color:var(--mute);font-size:.9rem;margin:0 0 1.75rem}
+footer{border-top:1px solid var(--line);color:var(--mute);font-size:.85rem}
+footer .wrap{padding-top:1.25rem;padding-bottom:1.25rem}
+@media (max-width:560px){.menu small{display:none}}
+@media (prefers-reduced-motion:reduce){.menu a{transition:none}}
+</style>
 </head>
 <body>
+<header><div class="wrap"><a class="logo" href="#beranda">Qibar Mandiri</a><nav class="top" id="nav" aria-label="Menu utama"></nav><div id="auth" class="ui"></div></div></header>
+<main class="wrap" id="view"></main>
+<footer><div class="wrap">© <span id="yr"></span> Qibar Mandiri · <a href="#privasi">Kebijakan privasi</a></div></footer>
 
-  <header>
-    <div class="logo">Qibar Mandiri</div>
-   <nav>
-  <a href="#tentang">Tentang</a>
-  <a href="#layanan">Layanan</a>
-  <a href="katalog-buku-1.0.html">Katalog Buku</a>
-  <a href="#kontak">Kontak</a>
-</nav>
-  </header>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+/* Konfigurasi Firebase dibaca dari berkas firebase-config.js (dipakai bersama oleh katalog-buku.html) */
+const FIREBASE_CONFIG = window.FIREBASE_CONFIG || null;
 
-  <section class="hero">
-    <h1>Selamat Datang di Qibar Mandiri</h1>
-    <p>Solusi terpercaya, mandiri, dan profesional untuk memenuhi kebutuhan layanan dan inovasi Anda.</p>
-    <a href="#layanan" class="btn">Jelajahi Layanan</a>
-  </section>
+/* ===== 2. ISI KONTEN: ubah dan tambah sendiri di sini ===== */
+const CONTENT = {
+  books: [
+    {title:"Judul Buku Contoh", author:"Nama Penulis", date:"2026-11-01", text:"Tulis ringkasan buku Anda di sini: gagasan utama, bagian yang paling berkesan, dan untuk siapa buku ini cocok."}
+  ],
+  opinions: [
+    {title:"Opini Contoh: Kasus yang Sedang Ramai", date:"2026-11-20", source:"Nama media atau tautan berita", text:"Tulis opini Anda di sini. Sebutkan fakta yang sudah terkonfirmasi, lalu pisahkan dari pendapat pribadi Anda."}
+  ],
+  videos: [
+    {title:"Video ringkasan buku (contoh)", url:"https://www.youtube.com/", note:"Tautan video untuk ringkasan buku."},
+    {title:"Video opini (contoh)", url:"https://www.youtube.com/", note:"Tautan video untuk opini berita."}
+  ]
+};
 
-  <section id="layanan" class="section">
-    <h2 style="text-align:center; font-size: 1.8rem;">Fokus & Layanan Kami</h2>
-    <div class="grid">
-      <div class="card">
-        <h3>Layanan Utama</h3>
-        <p>Deskripsi singkat mengenai layanan atau produk unggulan pertama dari Qibar Mandiri.</p>
-      </div>
-      <div class="card">
-        <h3>Inovasi & Solusi</h3>
-        <p>Deskripsi singkat mengenai keunggulan kualitas, kecepatan, dan keandalan kerja kami.</p>
-      </div>
-      <div class="card">
-        <h3>Konsultasi & Dukungan</h3>
-        <p>Deskripsi singkat mengenai bagaimana pelanggan dapat terhubung dan bekerja sama dengan mudah.</p>
-      </div>
-    </div>
-  </section>
+/* ===== Kode di bawah ini tidak perlu diubah ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^https?:\/\//i.test(u) ? u : "#";
+const SP = [["#7A1F2B","#fff"],["#1F4D3A","#fff"],["#D9A21B","#101828"],["#274690","#fff"],["#5B2A6E","#fff"]];
+const demo = !FIREBASE_CONFIG;
+let user = null, db = null, auth = null, tab = "buku";
 
-  <footer id="kontak">
-    <p>&copy; 2026 Qibar Mandiri. Hak Cipta Dilindungi.</p>
-  </footer>
+if (!demo) {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  auth = firebase.auth(); db = firebase.firestore();
+  auth.onAuthStateChanged(u => { user = u; renderAuth(); route(); });
+}
+async function load(name) {
+  if (demo) { try { return JSON.parse(localStorage.getItem("qm_" + name)) || []; } catch (e) { return []; } }
+  const d = await db.collection("users").doc(user.uid).collection("lists").doc(name).get();
+  return d.exists ? (d.data().items || []) : [];
+}
+async function save(name, items) {
+  if (demo) { try { localStorage.setItem("qm_" + name, JSON.stringify(items)); } catch (e) {} return; }
+  await db.collection("users").doc(user.uid).collection("lists").doc(name).set({items});
+}
 
+const PAGES = [["beranda","Beranda"],["buku","Buku"],["opini","Opini"],["video","Video"],["aplikasi","Aplikasi"]];
+
+function renderAuth() {
+  const a = $("#auth");
+  if (demo) { a.innerHTML = '<span class="meta">Mode contoh</span>'; return; }
+  a.innerHTML = user ? `<span class="meta">${esc(user.displayName || user.email)}</span> <button class="ghost" id="out">Keluar</button>` : '<button id="in">Masuk dengan Google</button>';
+  if ($("#in")) $("#in").onclick = () => auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert("Gagal masuk: " + e.message));
+  if ($("#out")) $("#out").onclick = () => auth.signOut();
+}
+
+function route() {
+  const p = (location.hash || "#beranda").slice(1);
+  $("#nav").innerHTML = PAGES.map(([k, v]) => `<a href="#${k}" ${k === p ? 'aria-current="page"' : ""}>${v}</a>`).join("");
+  const v = $("#view");
+  const entry = (i, t, meta, body) => `<article class="entry" style="--c:${SP[i % 5][0]}"><div><h3>${esc(t)}</h3><div class="meta">${meta}</div><p>${esc(body)}</p></div></article>`;
+  if (p === "buku") v.innerHTML = `<h2>Ringkasan buku</h2>` + CONTENT.books.map((b, i) => entry(i, b.title, `${esc(b.author)} · dibaca ${esc(b.date)}`, b.text)).join("");
+  else if (p === "opini") v.innerHTML = `<h2>Opini</h2>` + CONTENT.opinions.map((o, i) => entry(i + 1, o.title, `${esc(o.date)} · Sumber: ${esc(o.source)}`, o.text)).join("");
+  else if (p === "video") v.innerHTML = `<h2>Video</h2>` + CONTENT.videos.map((x, i) => `<article class="entry" style="--c:${SP[(i + 2) % 5][0]}"><div><h3>${esc(x.title)}</h3><p>${esc(x.note)}</p><p><a class="btn" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">Tonton video</a></p></div></article>`).join("");
+  else if (p === "aplikasi") renderApp();
+  else if (p === "privasi") v.innerHTML = `<h2>Kebijakan privasi</h2><p>Qibar Mandiri hanya menyimpan nama, email Google, dan catatan yang Anda tulis sendiri. Data hanya bisa dilihat oleh akun Anda dan tidak dibagikan ke pihak lain. Anda dapat meminta data Anda dihapus kapan saja dengan menghubungi pemilik web.</p>`;
+  else {
+    const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit"],["Opini","#opini","Kabar dan kasus yang sedang ramai"],["Video","#video","Versi tontonan"],["Katalog Buku","katalog-buku.html","Cek sebelum membeli"],["Catatan","#aplikasi","Belanja dan kegiatan","catatan"]];
+    v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.6rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><small>${m[2]}</small></a>`).join("")}</nav>`;
+  }
+}
+
+document.addEventListener("click", e => { const a = e.target.closest("[data-tab]"); if (a) tab = a.dataset.tab; });
+
+async function renderApp() {
+  const v = $("#view");
+  if (!demo && !user) { v.innerHTML = `<h2>Aplikasi</h2><p>Masuk dengan akun Google untuk memakai katalog buku dan catatan. Data tersimpan di akun Anda sendiri.</p><button id="in2">Masuk dengan Google</button>`; $("#in2").onclick = () => $("#in").click(); return; }
+  v.innerHTML = `<h2>Aplikasi</h2>${demo ? '<p class="note">Mode contoh: data hanya tersimpan di peramban ini. Isi berkas firebase-config.js agar login Google aktif dan data tersimpan di akun.</p>' : ""}
+    <div class="tabs"><a href="katalog-buku.html">Katalog buku</a><button aria-selected="true">Catatan</button></div><div id="pane">Memuat…</div>`;
+  catatan();
+}
+
+async function catatan() {
+  let items = await load("notes"), f = "semua";
+  const pane = $("#pane");
+  pane.innerHTML = `<div class="form"><select id="k" aria-label="Jenis"><option value="belanja">Belanja</option><option value="kegiatan">Kegiatan</option></select><input id="n" placeholder="Tulis catatan"><input id="dt" type="date" aria-label="Tanggal"></div><button id="add">Tambah catatan</button>
+    <div class="tabs" style="margin-top:2rem"><button data-f="semua" aria-selected="true">Semua</button><button data-f="belanja" aria-selected="false">Belanja</button><button data-f="kegiatan" aria-selected="false">Kegiatan</button></div><div id="list"></div>`;
+  const draw = () => {
+    const m = items.filter(i => f === "semua" || i.k === f);
+    $("#list").innerHTML = m.length ? m.map(i => `<div class="item ${i.done ? "done" : ""}"><input type="checkbox" data-c="${i.id}" ${i.done ? "checked" : ""} aria-label="Selesai"><div class="grow">${esc(i.n)}<div class="meta">${i.k}${i.d ? " · " + esc(i.d) : ""}</div></div><button class="x" data-x="${i.id}" aria-label="Hapus">Hapus</button></div>`).join("") : '<p class="meta">Belum ada catatan di daftar ini.</p>';
+    document.querySelectorAll("[data-c]").forEach(c => c.onchange = async () => { items.find(i => i.id === c.dataset.c).done = c.checked; await save("notes", items); draw(); });
+    document.querySelectorAll("[data-x]").forEach(x => x.onclick = async () => { items = items.filter(i => i.id !== x.dataset.x); await save("notes", items); draw(); });
+  };
+  pane.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { f = b.dataset.f; pane.querySelectorAll("[data-f]").forEach(o => o.setAttribute("aria-selected", o === b)); draw(); });
+  $("#add").onclick = async () => {
+    const n = $("#n").value.trim(); if (!n) { $("#n").focus(); return; }
+    items.unshift({id: Date.now().toString(36), k: $("#k").value, n, d: $("#dt").value, done: false});
+    await save("notes", items); $("#n").value = ""; draw();
+  };
+  draw();
+}
+
+$("#yr").textContent = new Date().getFullYear();
+window.addEventListener("hashchange", route);
+renderAuth(); route();
+</script>
 </body>
 </html>
