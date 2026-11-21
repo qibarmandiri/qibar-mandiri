@@ -97,7 +97,7 @@ const safeUrl = u => /^https?:\/\//i.test(u) ? u : "#";
 const SP = [["#7A1F2B","#fff"],["#1F4D3A","#fff"],["#D9A21B","#101828"],["#274690","#fff"],["#5B2A6E","#fff"]];
 const HL_MAX = 10; /* batas maksimal judul terbaru di halaman depan; yang tampil menyesuaikan lebar tempat */
 const demo = !FIREBASE_CONFIG;
-let user = null, db = null, auth = null, tab = "buku";
+let user = null, db = null, auth = null;
 
 if (!demo) {
   firebase.initializeApp(FIREBASE_CONFIG);
@@ -137,7 +137,7 @@ function route() {
   else {
     const newest = arr => [...arr].sort((x, y) => String(y.date || "").localeCompare(String(x.date || ""))).slice(0, HL_MAX).map(x => x.title);
     const hb = newest(CONTENT.books), ho = newest(CONTENT.opinions), hv = newest(CONTENT.videos);
-    const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit","","buku",hb],["Opini","#opini","Kabar dan kasus yang sedang ramai","","opini",ho],["Video","#video","Versi tontonan","","video",hv],["Katalog Buku","katalog-buku.html","Cek sebelum membeli","","katalog",[]],["Catatan Kegiatan Harian","#aplikasi","Belanja dan kegiatan","catatan","catatan",[]]];
+    const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit","","buku",hb],["Opini","#opini","Kabar dan kasus yang sedang ramai","","opini",ho],["Video","#video","Versi tontonan","","video",hv],["Katalog Buku","katalog-buku.html","Cek sebelum membeli","","katalog",[]],["Catatan Kegiatan Harian","aktivitas_harian.html","Pantau aktivitas harian","","aktivitas",[]]];
     v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.6rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><span class="hl" id="hl-${m[4]}" data-items="${esc(JSON.stringify(m[5]))}"></span><small>${m[2]}</small></a>`).join("")}</nav>`;
     fitAll();
     fillHl();
@@ -157,41 +157,22 @@ function setHl(id, arr) { const el = $("#hl-" + id); if (el) { el.dataset.items 
 
 async function fillHl() {
   try {
-    if (!demo && !user) return;
-    if (!demo) { const b = await load("katalog"); setHl("katalog", b.slice(-HL_MAX).reverse().map(x => x.judul).filter(Boolean)); }
-    const n = await load("notes"); const open = n.filter(i => !i.done);
-    setHl("catatan", (open.length ? open : n).slice(0, HL_MAX).map(x => x.n));
+    if (demo || !user) return;
+    const b = await load("katalog");
+    setHl("katalog", b.slice(-HL_MAX).reverse().map(x => x.judul).filter(Boolean));
+    const a = await load("aktivitas");
+    const open = a.filter(x => x.status === "open");
+    const src = (open.length ? open : a).slice().sort((x, y) => String(y.tanggalMulai || "").localeCompare(String(x.tanggalMulai || "")));
+    setHl("aktivitas", src.map(x => x.subjek).filter(x => x && x !== "Subjek baru...").slice(0, HL_MAX));
   } catch (e) {}
 }
 
-document.addEventListener("click", e => { const a = e.target.closest("[data-tab]"); if (a) tab = a.dataset.tab; });
 
-async function renderApp() {
-  const v = $("#view");
-  if (!demo && !user) { v.innerHTML = `<h2>Aplikasi</h2><p>Masuk dengan akun Google untuk memakai katalog buku dan catatan. Data tersimpan di akun Anda sendiri.</p><button id="in2">Masuk dengan Google</button>`; $("#in2").onclick = () => $("#in").click(); return; }
-  v.innerHTML = `<h2>Aplikasi</h2>${demo ? '<p class="note">Mode contoh: data hanya tersimpan di peramban ini. Isi berkas firebase-config.js agar login Google aktif dan data tersimpan di akun.</p>' : ""}
-    <div class="tabs"><a href="katalog-buku.html">Katalog buku</a><button aria-selected="true">Catatan Kegiatan Harian</button></div><div id="pane">Memuat…</div>`;
-  catatan();
-}
-
-async function catatan() {
-  let items = await load("notes"), f = "semua";
-  const pane = $("#pane");
-  pane.innerHTML = `<div class="form"><select id="k" aria-label="Jenis"><option value="belanja">Belanja</option><option value="kegiatan">Kegiatan</option></select><input id="n" placeholder="Tulis catatan"><input id="dt" type="date" aria-label="Tanggal"></div><button id="add">Tambah catatan</button>
-    <div class="tabs" style="margin-top:2rem"><button data-f="semua" aria-selected="true">Semua</button><button data-f="belanja" aria-selected="false">Belanja</button><button data-f="kegiatan" aria-selected="false">Kegiatan</button></div><div id="list"></div>`;
-  const draw = () => {
-    const m = items.filter(i => f === "semua" || i.k === f);
-    $("#list").innerHTML = m.length ? m.map(i => `<div class="item ${i.done ? "done" : ""}"><input type="checkbox" data-c="${i.id}" ${i.done ? "checked" : ""} aria-label="Selesai"><div class="grow">${esc(i.n)}<div class="meta">${i.k}${i.d ? " · " + esc(i.d) : ""}</div></div><button class="x" data-x="${i.id}" aria-label="Hapus">Hapus</button></div>`).join("") : '<p class="meta">Belum ada catatan di daftar ini.</p>';
-    document.querySelectorAll("[data-c]").forEach(c => c.onchange = async () => { items.find(i => i.id === c.dataset.c).done = c.checked; await save("notes", items); draw(); });
-    document.querySelectorAll("[data-x]").forEach(x => x.onclick = async () => { items = items.filter(i => i.id !== x.dataset.x); await save("notes", items); draw(); });
-  };
-  pane.querySelectorAll("[data-f]").forEach(b => b.onclick = () => { f = b.dataset.f; pane.querySelectorAll("[data-f]").forEach(o => o.setAttribute("aria-selected", o === b)); draw(); });
-  $("#add").onclick = async () => {
-    const n = $("#n").value.trim(); if (!n) { $("#n").focus(); return; }
-    items.unshift({id: Date.now().toString(36), k: $("#k").value, n, d: $("#dt").value, done: false});
-    await save("notes", items); $("#n").value = ""; draw();
-  };
-  draw();
+function renderApp() {
+  $("#view").innerHTML = `<h2>Aplikasi</h2><nav class="menu" aria-label="Daftar aplikasi">
+    <a href="katalog-buku.html"><span>Katalog Buku</span><span></span><small>Cek sebelum membeli</small></a>
+    <a href="aktivitas_harian.html"><span>Catatan Kegiatan Harian</span><span></span><small>Pantau aktivitas harian</small></a></nav>
+    <p class="note" style="margin-top:1.5rem">Masuk dengan akun Google di salah satu aplikasi. Datanya tersimpan di cloud dan hanya bisa dilihat oleh akun Anda.</p>`;
 }
 
 $("#yr").textContent = new Date().getFullYear();

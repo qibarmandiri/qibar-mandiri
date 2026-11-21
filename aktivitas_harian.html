@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Aktivitas Harian</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 10px;
+        }
+        .container {
+            width: 100%;
+            max-width: 100%;
+            background: #ffffff;
+            padding: 15px 20px 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid #e1e4e8;
+            padding-bottom: 12px;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+            margin: 0;
+            font-size: 1.3em;
+            flex-grow: 1;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .year-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #eef2f3;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: bold;
+            color: #34495e;
+        }
+        .year-bar select {
+            width: auto;
+            padding: 3px 6px;
+            font-weight: bold;
+        }
+
+        button, .btn-label {
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: bold;
+            transition: background 0.2s;
+            display: inline-block;
+            text-align: center;
+        }
+        button:hover, .btn-label:hover {
+            background-color: #1abc9c;
+        }
+        .btn-export { background-color: #8e44ad; }
+        .btn-export:hover { background-color: #732d91; }
+        .btn-import { background-color: #d35400; }
+        .btn-import:hover { background-color: #b94000; }
+        
+        .btn-delete {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background 0.2s;
+        }
+        .btn-delete:hover {
+            background-color: #c0392b;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .board-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 900px) {
+            .board-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .column {
+            background: #fafbfc;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            padding: 10px;
+        }
+
+        .section-title {
+            font-size: 0.95em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .open-title { color: #d35400; border-color: #f39c12; }
+        .close-title { color: #27ae60; border-color: #2ecc71; }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            table-layout: fixed;
+        }
+        th, td {
+            border: 1px solid #bdc3c7;
+            padding: 6px 4px;
+            text-align: left;
+            font-size: 0.85em;
+            word-wrap: break-word;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f1c40f;
+            color: #2c3e50;
+            text-align: center;
+            font-size: 0.75em;
+            vertical-align: middle;
+        }
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .cell-textarea {
+            width: 100%;
+            min-height: 32px;
+            overflow: hidden;
+            resize: none;
+            padding: 4px;
+            box-sizing: border-box;
+            border: 1px solid transparent;
+            background: transparent;
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .cell-textarea:hover {
+            border-color: #b0c4de;
+            background-color: #fff;
+        }
+        .cell-textarea:focus {
+            border-color: #3498db;
+            background-color: #fff;
+            outline: none;
+        }
+
+        .col-date {
+            width: 110px;
+            text-align: center;
+        }
+
+        input[type="date"], select {
+            width: 100%;
+            padding: 3px 2px;
+            box-sizing: border-box;
+            border: 1px solid #3498db;
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: 0.8em;
+            background-color: #fff;
+        }
+
+        .status-open {
+            background-color: #fef9e7;
+            color: #d35400;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .status-close {
+            background-color: #e8f8f5;
+            color: #27ae60;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .badge {
+            background: #ddd;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.75em;
+        }
+        .center {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin: 0 0 10px; font-size: 0.9em; }
+        .topbar a { color: #2c3e50; text-decoration: none; }
+        .topbar button { padding: 3px 8px; margin-left: 8px; }
+        .info-cloud { background: #fff3cd; border: 1px solid #f1c40f; border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 0.85em; }
+    </style>
+</head>
+<body>
+
+<div class="topbar"><a href="index.html">← Kembali ke Qibar Mandiri</a><span id="akun"></span></div>
+
+<div class="container" id="loginCard" style="display:none;max-width:480px;margin:40px auto;text-align:center">
+    <h2 style="flex-grow:0;margin-bottom:10px">Masuk untuk membuka aktivitas harian</h2>
+    <p>Data tersimpan di akun Google Anda dan hanya Anda yang bisa melihatnya. Bisa dibuka dari perangkat mana saja.</p>
+    <button id="masuk">Masuk dengan Google</button>
+</div>
+
+<div class="container" id="app">
+    <div id="infoCloud" class="info-cloud" style="display:none"></div>
+    <div class="header-section">
+        <div class="header-left">
+            <button onclick="tambahBaris()">+ Tambah Aktivitas Baru</button>
+            <div class="year-bar">
+                <span>📅 Tahun:</span>
+                <select id="global-year" onchange="ubahTahunGlobal(this.value)">
+                    <option value="2025">2025</option>
+                    <option value="2026" selected>2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                </select>
+            </div>
+        </div>
+        <h2>Monitoring Aktivitas Harian</h2>
+        <div class="header-right">
+            <span class="badge" id="sinkron"></span>
+            <button class="btn-export" onclick="eksporData()">📥 Ekspor Data</button>
+            <label for="import-file" class="btn-label btn-import">📤 Impor Data</label>
+            <input type="file" id="import-file" accept=".json" onchange="imporData(event)">
+        </div>
+    </div>
+
+    <div class="board-layout">
+        <!-- KOLOM KIRI: STATUS OPEN -->
+        <div class="column">
+            <div class="section-title open-title">
+                <span>Status: OPEN (Berjalan)</span>
+                <span class="badge" id="count-open">0</span>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-date">Tgl Mlai</th>
+                            <th>Subjek</th>
+                            <th>Catatan</th>
+                            <th class="col-date">Tgl Sls</th>
+                            <th style="width: 32px;">S</th>
+                            <th style="width: 32px;">❌</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-open"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- KOLOM KANAN: STATUS CLOSE -->
+        <div class="column">
+            <div class="section-title close-title">
+                <span>Status: CLOSE (Selesai)</span>
+                <span class="badge" id="count-close">0</span>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-date">Tgl Mlai</th>
+                            <th>Subjek</th>
+                            <th>Catatan</th>
+                            <th class="col-date">Tgl Sls</th>
+                            <th style="width: 32px;">S</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-close"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+    const KUNCI = 'monitoring_app_data';
+    function dataAwal() {
+        return {
+            tahun: "2026",
+            aktivitas: [
+                { tanggalMulai: '', subjek: 'Subjek baru...', catatan: 'Catatan baru...', tanggalSelesai: '', status: 'open' }
+            ]
+        };
+    }
+    let appData = dataAwal();
+
+    // Ubah format lama (DD/MM tanpa tahun) menjadi YYYY-MM-DD dan beri setiap aktivitas field "tahun"
+    function konversiTanggalLama(tgl, tahunDefault) {
+        if (!tgl) return '';
+        let m = String(tgl).match(/^(\d{1,2})\/(\d{1,2})$/);
+        if (m) return `${tahunDefault}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`;
+        return tgl;
+    }
+
+    function migrasiData() {
+        if (!appData.tahun) appData.tahun = "2026";
+        appData.tahun = String(appData.tahun);
+        if (!Array.isArray(appData.aktivitas)) appData.aktivitas = [];
+        appData.aktivitas.forEach(item => {
+            let tahunDefault = item.tahun ? String(item.tahun) : appData.tahun;
+            item.tanggalMulai = konversiTanggalLama(item.tanggalMulai, tahunDefault);
+            item.tanggalSelesai = konversiTanggalLama(item.tanggalSelesai, tahunDefault);
+            if (item.tanggalMulai && /^\d{4}-/.test(item.tanggalMulai)) {
+                item.tahun = item.tanggalMulai.substring(0, 4);
+            } else if (!item.tahun) {
+                item.tahun = tahunDefault;
+            }
+            item.tahun = String(item.tahun);
+        });
+    }
+
+    function pastikanOpsiTahun(tahun) {
+        const sel = document.getElementById('global-year');
+        if (![...sel.options].some(o => o.value === String(tahun))) {
+            const opt = document.createElement('option');
+            opt.value = tahun;
+            opt.textContent = tahun;
+            sel.appendChild(opt);
+            [...sel.options]
+                .sort((a, b) => a.value - b.value)
+                .forEach(o => sel.appendChild(o));
+        }
+        sel.value = tahun;
+    }
+
+    function esc(str) {
+        return String(str ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    var CFG = window.FIREBASE_CONFIG || null, db = null, auth = null, uid = null, siap = false, tunda = null;
+
+    function lokal() {
+        try { return JSON.parse(localStorage.getItem(KUNCI)); } catch (e) { return null; }
+    }
+    function terapkan() {
+        migrasiData();
+        appData.aktivitas.forEach(i => pastikanOpsiTahun(i.tahun));
+        pastikanOpsiTahun(appData.tahun);
+        renderTabel();
+    }
+    function ref() {
+        return db.collection("users").doc(uid).collection("lists").doc("aktivitas");
+    }
+    function tampilSinkron(t) {
+        const e = document.getElementById('sinkron');
+        if (e) e.textContent = t;
+    }
+    function kirim() {
+        clearTimeout(tunda); tunda = null;
+        if (!CFG || !uid || !siap) return;
+        tampilSinkron("Menyimpan…");
+        ref().set({ items: JSON.parse(JSON.stringify(appData.aktivitas)), tahun: String(appData.tahun) })
+            .then(() => tampilSinkron("Tersimpan di cloud ✓"))
+            .catch(e => { tampilSinkron("Gagal menyimpan"); alert("Gagal menyimpan ke cloud: " + e.message); });
+    }
+    function simpanKeStorage() {
+        if (!CFG) { try { localStorage.setItem(KUNCI, JSON.stringify(appData)); } catch (e) {} return; }
+        if (!siap) return;
+        tampilSinkron("Menyimpan…");
+        clearTimeout(tunda);
+        tunda = setTimeout(kirim, 800);
+    }
+    function muat() {
+        if (!CFG) { appData = lokal() || dataAwal(); terapkan(); siap = true; return Promise.resolve(); }
+        siap = false;
+        const tahunIni = String(new Date().getFullYear());
+        return ref().get().then(d => {
+            let pindah = false;
+            if (d.exists) {
+                appData = { tahun: String(d.data().tahun || tahunIni), aktivitas: d.data().items || [] };
+            } else {
+                appData = { tahun: tahunIni, aktivitas: [] };
+                const lama = lokal();
+                if (lama && Array.isArray(lama.aktivitas) && lama.aktivitas.length &&
+                    confirm("Ditemukan " + lama.aktivitas.length + " aktivitas yang tersimpan di peramban ini. Pindahkan ke cloud?")) {
+                    appData = lama; pindah = true;
+                }
+            }
+            terapkan();
+            siap = true;
+            tampilSinkron("Tersimpan di cloud ✓");
+            if (pindah) kirim();
+        }).catch(e => {
+            appData = { tahun: tahunIni, aktivitas: [] };
+            terapkan();
+            tampilSinkron("Gagal memuat");
+            alert("Gagal memuat dari cloud: " + e.message);
+        });
+    }
+
+    function ubahTahunGlobal(tahunBaru) {
+        appData.tahun = tahunBaru;
+        simpanKeStorage();
+        renderTabel();
+    }
+
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+    }
+
+    function renderTabel() {
+        const tbodyOpen = document.getElementById('table-open');
+        const tbodyClose = document.getElementById('table-close');
+        
+        tbodyOpen.innerHTML = '';
+        tbodyClose.innerHTML = '';
+
+        let countOpen = 0;
+        let countClose = 0;
+
+        appData.aktivitas.forEach((item, index) => {
+            // Filter tahunan: hanya tampilkan aktivitas pada tahun yang dipilih
+            if (String(item.tahun) !== String(appData.tahun)) return;
+
+            let tr = document.createElement('tr');
+            let statusClass = item.status === 'open' ? 'status-open' : 'status-close';
+
+            let valDateMulai = item.tanggalMulai || '';
+            let valDateSelesai = item.tanggalSelesai || '';
+
+            if (item.status === 'open') {
+                tr.innerHTML = `
+                    <td class="col-date"><input type="date" value="${valDateMulai}" onchange="updateTanggal(${index}, 'tanggalMulai', this.value)"></td>
+                    <td><textarea class="cell-textarea" onfocus="handleFocus(this)" oninput="updateData(${index}, 'subjek', this); autoResize(this);">${esc(item.subjek)}</textarea></td>
+                    <td><textarea class="cell-textarea" onfocus="handleFocus(this)" oninput="updateData(${index}, 'catatan', this); autoResize(this);">${esc(item.catatan)}</textarea></td>
+                    <td class="col-date"><input type="date" value="${valDateSelesai}" onchange="updateTanggal(${index}, 'tanggalSelesai', this.value)"></td>
+                    <td class="${statusClass}">
+                        <select onchange="updateStatus(${index}, this.value)">
+                            <option value="open" selected>O</option>
+                            <option value="close">C</option>
+                        </select>
+                    </td>
+                    <td class="center">
+                        <button class="btn-delete" onclick="hapusBaris(${index})" title="Hapus Baris">🗑️</button>
+                    </td>
+                `;
+                tbodyOpen.appendChild(tr);
+                countOpen++;
+            } else {
+                tr.innerHTML = `
+                    <td class="col-date"><input type="date" value="${valDateMulai}" onchange="updateTanggal(${index}, 'tanggalMulai', this.value)"></td>
+                    <td><textarea class="cell-textarea" onfocus="handleFocus(this)" oninput="updateData(${index}, 'subjek', this); autoResize(this);">${esc(item.subjek)}</textarea></td>
+                    <td><textarea class="cell-textarea" onfocus="handleFocus(this)" oninput="updateData(${index}, 'catatan', this); autoResize(this);">${esc(item.catatan)}</textarea></td>
+                    <td class="col-date"><input type="date" value="${valDateSelesai}" onchange="updateTanggal(${index}, 'tanggalSelesai', this.value)"></td>
+                    <td class="${statusClass}">
+                        <select onchange="updateStatus(${index}, this.value)">
+                            <option value="open">O</option>
+                            <option value="close" selected>C</option>
+                        </select>
+                    </td>
+                `;
+                tbodyClose.appendChild(tr);
+                countClose++;
+            }
+        });
+
+        document.getElementById('count-open').innerText = countOpen;
+        document.getElementById('count-close').innerText = countClose;
+
+        setTimeout(() => {
+            document.querySelectorAll('.cell-textarea').forEach(ta => autoResize(ta));
+        }, 0);
+    }
+
+    function handleFocus(textarea) {
+        if (textarea.value === 'Subjek baru...' || textarea.value === 'Catatan baru...') {
+            textarea.select();
+        }
+    }
+
+    function updateTanggal(index, field, value) {
+        let item = appData.aktivitas[index];
+        item[field] = value || '';
+        if (field === 'tanggalMulai' && value) {
+            // Tahun aktivitas mengikuti tahun tanggal mulai; pindah tampilan ke tahun tsb
+            item.tahun = value.substring(0, 4);
+            appData.tahun = item.tahun;
+            pastikanOpsiTahun(appData.tahun);
+        }
+        simpanKeStorage();
+        renderTabel();
+    }
+
+    function updateData(index, field, textarea) {
+        appData.aktivitas[index][field] = textarea.value;
+        simpanKeStorage();
+    }
+
+    function updateStatus(index, value) {
+        appData.aktivitas[index]['status'] = value;
+        simpanKeStorage();
+        renderTabel();
+    }
+
+    function tambahBaris() {
+        appData.aktivitas.push({
+            tanggalMulai: '',
+            subjek: 'Subjek baru...',
+            catatan: 'Catatan baru...',
+            tanggalSelesai: '',
+            status: 'open',
+            tahun: String(appData.tahun)
+        });
+        simpanKeStorage();
+        renderTabel();
+    }
+
+    function hapusBaris(index) {
+        if (confirm("Apakah Anda yakin ingin menghapus aktivitas ini?")) {
+            appData.aktivitas.splice(index, 1);
+            simpanKeStorage();
+            renderTabel();
+        }
+    }
+
+    function eksporData() {
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
+        let downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "data_monitoring_aktivitas.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function imporData(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let parsedData = JSON.parse(e.target.result);
+                if (Array.isArray(parsedData)) {
+                    appData.aktivitas = parsedData;
+                } else if (parsedData && parsedData.aktivitas) {
+                    appData = parsedData;
+                }
+                migrasiData();
+                appData.aktivitas.forEach(i => pastikanOpsiTahun(i.tahun));
+                pastikanOpsiTahun(appData.tahun);
+                simpanKeStorage();
+                renderTabel();
+                alert("Data berhasil dipulihkan dari file!");
+            } catch (error) {
+                alert("Terjadi kesalahan saat membaca file.");
+            }
+        };
+        reader.readAsText(file);
+        event.target.value = '';
+    }
+
+    function tampilApp(on) {
+        document.getElementById('app').style.display = on ? '' : 'none';
+        document.getElementById('loginCard').style.display = on ? 'none' : '';
+    }
+    if (!CFG) {
+        const b = document.getElementById('infoCloud');
+        b.textContent = "Penyimpanan cloud belum aktif: data masih tersimpan di peramban ini. Isi berkas firebase-config.js agar tersimpan di cloud.";
+        b.style.display = '';
+        tampilApp(true);
+        muat();
+    } else {
+        firebase.initializeApp(CFG);
+        auth = firebase.auth(); db = firebase.firestore();
+        try { db.enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (e) {}
+        document.getElementById('masuk').addEventListener('click', () => {
+            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert("Gagal masuk: " + e.message));
+        });
+        auth.onAuthStateChanged(u => {
+            if (u) {
+                uid = u.uid;
+                document.getElementById('akun').innerHTML = esc(u.displayName || u.email) + ' <button id="keluar">Keluar</button>';
+                document.getElementById('keluar').addEventListener('click', () => auth.signOut());
+                tampilApp(true);
+                muat();
+            } else {
+                uid = null; siap = false;
+                appData = { tahun: String(new Date().getFullYear()), aktivitas: [] };
+                document.getElementById('akun').textContent = '';
+                tampilApp(false);
+            }
+        });
+    }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden' && tunda) kirim(); });
+    window.addEventListener('pagehide', () => { if (tunda) kirim(); });
+</script>
+
+</body>
+</html>
