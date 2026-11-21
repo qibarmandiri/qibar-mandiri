@@ -35,7 +35,7 @@ main{padding-top:2rem;padding-bottom:5rem;min-height:70vh}
 .menu a:hover,.menu a:focus-visible{color:var(--accent);padding-left:.6rem}
 .menu small{font-size:.75rem;letter-spacing:0;color:var(--mute);text-align:right}
 .entry{padding:1.6rem 0;border-top:1px solid var(--line)}
-.entry p{max-width:36em;margin:.8rem 0 0}
+.entry p{max-width:36em;margin:.8rem 0 0;white-space:pre-line}
 .meta{font-size:.85rem;color:var(--mute)}
 button,.btn{font:600 .95rem Sora,sans-serif;cursor:pointer;border:0;border-radius:999px;padding:.7rem 1.4rem;background:var(--accent);color:var(--on);text-decoration:none;display:inline-block}
 button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
@@ -75,7 +75,7 @@ const FIREBASE_CONFIG = window.FIREBASE_CONFIG || null;
 /* ===== 2. ISI KONTEN: ubah dan tambah sendiri di sini ===== */
 const CONTENT = {
   books: [
-    {title:"Judul Buku Contoh", author:"Nama Penulis", date:"2026-11-01", text:"Tulis ringkasan buku Anda di sini: gagasan utama, bagian yang paling berkesan, dan untuk siapa buku ini cocok."}
+    {title:"The 7 Habits of Highly Effective People", author:"Stephen R. Covey", date:"2014", text:"Kerangka tujuh kebiasaan dari Stephen Covey untuk membangun efektivitas pribadi dan hubungan dengan orang lain. Saya mengenalnya lewat pelatihan di tempat kerja pada 2014, lalu menuliskan ulang pokok-pokoknya sebagai latihan mengingat.\n\n1. Jadilah proaktif. Saya yang memegang kendali atas diri saya, bukan orang lain atau keadaan.\n2. Mulai dengan akhir dalam pikiran. Tetapkan dulu hasil akhir yang dituju, lalu susun peta jalan untuk mencapainya.\n3. Dahulukan yang utama. Prioritaskan kuadran 2 (penting tetapi tidak mendesak) di atas kuadran 1 (penting dan mendesak), kuadran 3 (tidak penting tetapi mendesak), dan kuadran 4 (tidak penting dan tidak mendesak).\n4. Berpikir menang-menang. Upayakan solusi yang menguntungkan semua pihak, dalam kerja, bisnis, maupun bermasyarakat. Kalau tidak ada, lebih baik no deal daripada menang-kalah atau kalah-menang.\n5. Pahami dulu, baru dipahami. Dengarkan dengan empati, ulangi apa yang disampaikan lawan bicara untuk memastikan saya sudah paham, baru sampaikan gagasan sendiri.\n6. Wujudkan sinergi. Perbedaan gagasan dan sudut pandang adalah aset yang bisa dihimpun menjadi kekuatan bersama, karena 1 + 1 bisa lebih dari 2.\n7. Asah gergaji. Terus bekerja tanpa jeda, sepositif apa pun, justru menurunkan produktivitas. Seperti gergaji yang makin tumpul, kita perlu berhenti dan mengasahnya: istirahat, membaca, rekreasi, berkumpul dengan keluarga dan teman, serta menjalani hobi."}
   ],
   opinions: [
     {title:"Opini Contoh: Kasus yang Sedang Ramai", date:"2026-11-20", source:"Nama media atau tautan berita", text:"Tulis opini Anda di sini. Sebutkan fakta yang sudah terkonfirmasi, lalu pisahkan dari pendapat pribadi Anda."}
