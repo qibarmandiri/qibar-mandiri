@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tulis · Qibar Mandiri</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0A0E1A;--surface:#111729;--ink:#EAF0FF;--mute:#8C97B5;--line:#232C45;--accent:#8FB4FF;--on:#0A0E1A;--danger:#FF9B7A;color-scheme:dark}
+@media (prefers-color-scheme:light){:root{--bg:#F5F7FC;--surface:#fff;--ink:#0A0E1A;--mute:#5A6483;--line:#D9DFEE;--accent:#3A5BDB;--on:#fff;--danger:#C2410C;color-scheme:light}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:300 16px/1.6 Sora,system-ui,sans-serif;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+.wrap{max-width:760px;margin:0 auto;padding:.9rem 1.25rem 3rem}
+.top{display:flex;justify-content:space-between;align-items:center;gap:.5rem;font-size:.85rem;color:var(--mute);margin-bottom:.8rem}
+.top a{color:var(--mute);text-decoration:none}
+h1{font-size:1.6rem;font-weight:300;letter-spacing:-.03em;margin:.2rem 0 1rem}
+h2{font-size:1.05rem;font-weight:600;margin:2rem 0 .5rem}
+label{display:block;font-size:.8rem;color:var(--mute);margin:.9rem 0 .25rem}
+input,select,textarea{font:300 1rem Sora,sans-serif;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:.7rem .9rem;width:100%}
+textarea{min-height:220px;resize:vertical;line-height:1.6}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.two{display:grid;gap:.6rem;grid-template-columns:1fr 1fr}
+@media (max-width:520px){.two{grid-template-columns:1fr}}
+button{font:600 .9rem Sora,sans-serif;cursor:pointer;border:0;border-radius:999px;padding:.65rem 1.3rem;background:var(--accent);color:var(--on)}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button.small{padding:.3rem .8rem;font-size:.8rem}
+button.danger{background:transparent;color:var(--danger);border:1px solid var(--line)}
+.row{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-top:1.2rem}
+.note{font-size:.85rem;color:var(--mute);margin:.2rem 0 .6rem}
+.msg{margin-top:1rem;padding:.7rem 1rem;border-radius:12px;font-size:.9rem;background:var(--surface);border:1px solid var(--line);display:none}
+.msg.show{display:block}.msg.err{border-color:var(--danger);color:var(--danger)}
+.item{display:flex;align-items:center;gap:.8rem;padding:.75rem 0;border-top:1px solid var(--line)}
+.item .grow{flex:1;min-width:0}.item strong{font-weight:600}
+.badge{display:inline-block;font-size:.7rem;border:1px solid var(--line);border-radius:999px;padding:0 .6rem;color:var(--mute);margin-right:.4rem}
+.meta{font-size:.8rem;color:var(--mute)}
+#prev{max-width:240px;border-radius:12px;margin-top:.5rem;display:none}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:1.2rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><a href="index.html">← Kembali ke Qibar Mandiri</a><span id="akun"></span></div>
+  <h1>Tulis dan terbitkan</h1>
+  <div class="msg show err" id="cfg" style="display:none">Firebase belum diatur. Isi berkas firebase-config.js terlebih dahulu.</div>
+
+  <div class="card" id="loginCard" style="display:none">
+    <p>Masuk dengan akun Google Anda untuk menulis. Pengunjung biasa hanya bisa membaca.</p>
+    <label style="display:flex;gap:.5rem;align-items:center;margin:.6rem 0"><input type="checkbox" id="ingat" style="width:auto"> Ingat saya di perangkat ini</label>
+    <button id="masuk">Masuk dengan Google</button>
+  </div>
+
+  <div id="app" style="display:none">
+    <p class="note" id="info"></p>
+
+    <label for="jenis">Jenis tulisan</label>
+    <select id="jenis">
+      <option value="buku">Ringkasan buku</option>
+      <option value="opini">Opini</option>
+      <option value="video">Video</option>
+    </select>
+
+    <label for="judul">Judul</label>
+    <input id="judul" autocomplete="off">
+
+    <div class="two">
+      <div><label for="tanggal">Tanggal</label><input type="date" id="tanggal"></div>
+      <div id="wPenulis"><label for="penulis">Penulis buku</label><input id="penulis" autocomplete="off"></div>
+      <div id="wSumber"><label for="sumber">Sumber berita atau tautan</label><input id="sumber" autocomplete="off"></div>
+      <div id="wUrl"><label for="url">Tautan video (https://…)</label><input id="url" inputmode="url" autocomplete="off"></div>
+    </div>
+
+    <div id="wIsi">
+      <label for="isi">Isi tulisan (baris baru akan ikut tampil)</label>
+      <textarea id="isi"></textarea>
+    </div>
+    <div id="wNote">
+      <label for="note">Keterangan video</label>
+      <input id="note" autocomplete="off">
+    </div>
+
+    <div id="wFoto">
+      <label for="foto">Foto di akhir tulisan (opsional, otomatis dikecilkan)</label>
+      <input type="file" id="foto" accept="image/*">
+      <img id="prev" alt="Pratinjau foto">
+      <div class="row" style="margin-top:.5rem"><button class="ghost small" id="hapusFoto" style="display:none">Hapus foto</button></div>
+      <label for="caption">Keterangan foto</label>
+      <input id="caption" autocomplete="off">
+    </div>
+
+    <div class="row">
+      <button id="simpan">Terbitkan</button>
+      <button class="ghost" id="batal" style="display:none">Batal edit</button>
+    </div>
+    <div class="msg" id="pesan"></div>
+
+    <h2>Tulisan yang sudah terbit</h2>
+    <p class="note">Tulisan lama yang masih ada di berkas index.html tidak tampil di sini. Hanya yang diterbitkan lewat halaman ini.</p>
+    <div id="daftar"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(function () {
+  var CFG = window.FIREBASE_CONFIG || null, db, auth, user = null;
+  var daftar = [], editId = null, foto = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return {"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]; }); };
+  var NAMA = {buku: "Ringkasan buku", opini: "Opini", video: "Video"};
+
+  function qmIngat() { try { return localStorage.getItem("qm_ingat") === "1"; } catch (e) { return false; } }
+  function qmPersist(a) { a.setPersistence(qmIngat() ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION).catch(function () {}); }
+
+  function pesan(t, err) { var e = $("pesan"); e.textContent = t; e.className = "msg show" + (err ? " err" : ""); if (!err) setTimeout(function () { e.className = "msg"; }, 3500); }
+  function hariIni() { var d = new Date(), p = function (x) { return String(x).padStart(2, "0"); }; return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()); }
+
+  function atur() {
+    var j = $("jenis").value;
+    $("wPenulis").style.display = j === "buku" ? "" : "none";
+    $("wSumber").style.display = j === "opini" ? "" : "none";
+    $("wUrl").style.display = j === "video" ? "" : "none";
+    $("wIsi").style.display = j === "video" ? "none" : "";
+    $("wFoto").style.display = j === "video" ? "none" : "";
+    $("wNote").style.display = j === "video" ? "" : "none";
+  }
+  function kosong() {
+    editId = null; foto = null;
+    ["judul", "penulis", "sumber", "url", "isi", "note", "caption"].forEach(function (i) { $(i).value = ""; });
+    $("tanggal").value = hariIni(); $("foto").value = "";
+    $("prev").style.display = "none"; $("hapusFoto").style.display = "none";
+    $("simpan").textContent = "Terbitkan"; $("batal").style.display = "none";
+    atur();
+  }
+  function tampilFoto() {
+    $("prev").style.display = foto ? "block" : "none";
+    if (foto) $("prev").src = foto;
+    $("hapusFoto").style.display = foto ? "" : "none";
+  }
+
+  function kecilkan(file) {
+    return new Promise(function (ok, gagal) {
+      var r = new FileReader();
+      r.onload = function () {
+        var im = new Image();
+        im.onload = function () {
+          var max = 900, w = im.width, h = im.height;
+          if (w > max) { h = Math.round(h * max / w); w = max; }
+          var c = document.createElement("canvas"); c.width = w; c.height = h;
+          c.getContext("2d").drawImage(im, 0, 0, w, h);
+          var q = 0.75, d = c.toDataURL("image/jpeg", q);
+          while (d.length > 450000 && q > 0.35) { q -= 0.1; d = c.toDataURL("image/jpeg", q); }
+          d.length > 800000 ? gagal(new Error("Foto terlalu besar, pilih foto lain")) : ok(d);
+        };
+        im.onerror = function () { gagal(new Error("Berkas itu bukan gambar")); };
+        im.src = r.result;
+      };
+      r.readAsDataURL(file);
+    });
+  }
+
+  function muat() {
+    return db.collection("posts").get().then(function (sn) {
+      daftar = sn.docs.map(function (d) { var x = d.data(); x.id = d.id; return x; })
+        .sort(function (a, b) { return String(b.date || "").localeCompare(String(a.date || "")); });
+      gambar();
+    }).catch(function (e) { pesan("Gagal memuat daftar: " + e.message, true); });
+  }
+  function gambar() {
+    $("daftar").innerHTML = daftar.length ? daftar.map(function (p) {
+      return '<div class="item"><div class="grow"><span class="badge">' + NAMA[p.type] + '</span><strong>' + esc(p.title) + '</strong><div class="meta">' + esc(p.date) + '</div></div>' +
+        '<button class="ghost small" data-e="' + esc(p.id) + '">Edit</button><button class="danger small" data-h="' + esc(p.id) + '">Hapus</button></div>';
+    }).join("") : '<p class="meta">Belum ada tulisan yang diterbitkan dari halaman ini.</p>';
+    document.querySelectorAll("[data-e]").forEach(function (b) { b.onclick = function () { edit(b.getAttribute("data-e")); }; });
+    document.querySelectorAll("[data-h]").forEach(function (b) { b.onclick = function () { hapus(b.getAttribute("data-h")); }; });
+  }
+  function edit(id) {
+    var p = daftar.filter(function (x) { return x.id === id; })[0]; if (!p) return;
+    kosong(); editId = id;
+    $("jenis").value = p.type; atur();
+    $("judul").value = p.title || ""; $("tanggal").value = p.date || hariIni();
+    $("penulis").value = p.author || ""; $("sumber").value = p.source || "";
+    $("url").value = p.url || ""; $("isi").value = p.text || ""; $("note").value = p.note || "";
+    $("caption").value = p.caption || ""; foto = p.image || null; tampilFoto();
+    $("simpan").textContent = "Simpan perubahan"; $("batal").style.display = "";
+    window.scrollTo({top: 0, behavior: "smooth"});
+  }
+  function hapus(id) {
+    var p = daftar.filter(function (x) { return x.id === id; })[0];
+    if (!p || !confirm("Hapus tulisan \"" + p.title + "\"? Ini tidak bisa dibatalkan.")) return;
+    db.collection("posts").doc(id).delete().then(function () { if (editId === id) kosong(); pesan("Tulisan dihapus."); return muat(); })
+      .catch(function (e) { pesan("Gagal menghapus: " + e.message, true); });
+  }
+  function simpan() {
+    var j = $("jenis").value, judul = $("judul").value.trim();
+    if (!judul) { pesan("Judul wajib diisi.", true); return; }
+    var d = {type: j, title: judul, date: $("tanggal").value || hariIni(), updatedAt: firebase.firestore.FieldValue.serverTimestamp()};
+    if (j === "video") {
+      var u = $("url").value.trim();
+      if (!/^https?:\/\//i.test(u)) { pesan("Tautan video harus diawali http:// atau https://", true); return; }
+      d.url = u; d.note = $("note").value.trim();
+    } else {
+      var isi = $("isi").value.trim();
+      if (!isi) { pesan("Isi tulisan wajib diisi.", true); return; }
+      d.text = isi; d.caption = $("caption").value.trim(); d.image = foto || "";
+      if (j === "buku") d.author = $("penulis").value.trim(); else d.source = $("sumber").value.trim();
+    }
+    $("simpan").disabled = true;
+    var ref = db.collection("posts");
+    (editId ? ref.doc(editId).set(d) : ref.add(d)).then(function () {
+      pesan(editId ? "Perubahan disimpan." : "Tulisan diterbitkan. Sudah tampil di web.");
+      kosong(); return muat();
+    }).catch(function (e) {
+      pesan(e.code === "permission-denied"
+        ? "Akun ini belum diizinkan menulis. Pastikan email Anda (" + (user && user.email) + ") sama persis dengan yang tertulis di aturan Firestore."
+        : "Gagal menyimpan: " + e.message, true);
+    }).then(function () { $("simpan").disabled = false; });
+  }
+
+  if (!CFG) { $("cfg").style.display = ""; return; }
+  firebase.initializeApp(CFG);
+  auth = firebase.auth(); db = firebase.firestore(); qmPersist(auth);
+  var c = $("ingat"); c.checked = qmIngat();
+  c.onchange = function () { try { localStorage.setItem("qm_ingat", c.checked ? "1" : "0"); } catch (e) {} qmPersist(auth); };
+  $("masuk").onclick = function () {
+    var p = new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt: "select_account"});
+    auth.signInWithPopup(p).catch(function (e) { alert("Gagal masuk: " + e.message); });
+  };
+  $("jenis").onchange = atur;
+  $("simpan").onclick = simpan;
+  $("batal").onclick = kosong;
+  $("hapusFoto").onclick = function () { foto = null; $("foto").value = ""; tampilFoto(); };
+  $("foto").onchange = function () {
+    var inp = this, f = inp.files[0]; if (!f) return;
+    kecilkan(f).then(function (d) { foto = d; tampilFoto(); }).catch(function (e) { pesan(e.message, true); inp.value = ""; });
+  };
+  auth.onAuthStateChanged(function (u) {
+    user = u;
+    $("loginCard").style.display = u ? "none" : "";
+    $("app").style.display = u ? "" : "none";
+    if (u) {
+      $("akun").innerHTML = esc(u.displayName || u.email) + ' <button class="ghost small" id="keluar">Keluar</button>';
+      $("keluar").onclick = function () { auth.signOut(); };
+      $("info").textContent = "Masuk sebagai " + u.email + ". Email inilah yang harus tertulis di aturan Firestore agar Anda boleh menulis.";
+      kosong(); muat();
+    } else { $("akun").textContent = ""; }
+  });
+})();
+</script>
+</body>
+</html>

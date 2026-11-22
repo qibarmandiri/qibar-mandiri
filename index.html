@@ -134,13 +134,23 @@ footer .wrap{padding-top:.7rem;padding-bottom:.7rem}
   .menu a.cal>span:first-child{padding-right:0}
   .menu a.cal small{display:block;padding-right:0;margin-bottom:.15rem}
 }
+/* Header di HP: satu baris logo+akun, satu baris tanggal, satu baris menu */
+@media (max-width:700px){
+  header .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:.2rem .75rem;padding-top:.7rem;padding-bottom:.4rem}
+  .logo{order:1;flex:1 1 auto;font-size:1.05rem}
+  #auth{order:2;display:flex;align-items:center;gap:.5rem;font-size:.78rem}
+  #auth button{padding:.3rem .8rem;font-size:.78rem}
+  .tgl{order:3;flex:0 0 100%;text-align:left;white-space:nowrap;font-size:.78rem}
+  nav.top{order:4;flex:0 0 100%;flex-wrap:nowrap;overflow-x:auto;gap:.2rem 1rem;font-size:.85rem;padding-bottom:.2rem}
+  nav.top a{white-space:nowrap}
+}
 @media (prefers-reduced-motion:reduce){.menu a,.ill{transition:none}}
 </style>
 </head>
 <body>
 <header><div class="wrap"><a class="logo" href="#beranda">Qibar Mandiri</a><div class="tgl" id="tgl"></div><div id="auth" class="ui"></div><nav class="top" id="nav" aria-label="Menu utama"></nav></div></header>
 <main class="wrap" id="view"></main>
-<footer><div class="wrap">© <span id="yr"></span> Qibar Mandiri · <a href="#privasi">Kebijakan privasi</a></div></footer>
+<footer><div class="wrap">© <span id="yr"></span> Qibar Mandiri · <a href="#privasi">Kebijakan privasi</a> · <a href="tulis.html">Tulis</a></div></footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -155,13 +165,8 @@ const CONTENT = {
   books: [
     {title:"7 Habits", author:"Stephen Covey", date:"2014", text:"Saya mengetik ulang 7 kebiasaan sebagai tanda bahwa sudah mengingat kembali pokok-pokoknya. Saya mendapatkan training berdasarkan buku ini pada tahun 2014 lalu saat saya bekerja di sebuah perusahaan otomotif di Surabaya.\n\n7 habits oleh Stephen Covey :\n1. Menjadi proaktif, bahwa saya lah yang memiliki kontrol atas diri saya sendiri, bukan orang lain atau lingkungan.\n2. Memulai dari hasil akhir pikiran. Menentukan target akhir, selanjutnya saya membuat rencana peta jalan/blueprint dengan fokus pada tujuan apa yang mau saya capai.\n3. Mendahulukan yang utama. Yang terencana dan penting ada di kuadran 2 (penting tapi tidak mendesak)  yang harus saya prioritaskan. Dibandingkan dengan yang mendesak penting (k1) apalagi tidak penting mendesak (k3) maupun tidak penting dan tidak mendesak (k4)\n4. Saya akan selalu mengupayakan win win solution dalam segala interaksi terkait orang lain, baik dalam hubungan kerja, bisnis, maupun bermasyarakat. Pesan penulis selalu saya ingat, jika tidak ada win win solution, lebih baik no deal. Daripada win lose atau bahkan lose win.\n5. Memahami dulu baru dipahami. Saya memilih mendengar dengan empati dan memahami sudut pandang lawan bicara sebelum saya menyampaikan ide pribadi saya. Saya membiasakan mengulang apa yang disampaikan lawan bicara sebagai konfirmasi apakah saya sudah memahami lawan bicara.\n6. Mewujudkan sinergi dengan mengambil semua sudut pandang, perbedaan ide dan sudut pandang adalah aset untuk dihimpun menjadi kekuatan bersama. Karena bisa jadi 1+1 >2.\n7. Mengasah gergaji. Saya perlu waktu jeda, daripada terus menerus beraktifitas meskipun positip. Karena bisa menurunkan produktifitas. Jeda itu seperti gergaji yg dipakai terus menerus, ada saatnya tumpul, harus jeda, berhenti, diasah dan dipertajam dulu. Saya perlu jeda, istirahat, membaca buku, rekreasi, kumpul keluarga, kumpul dengan teman, dan juga melakukan hobi."}
   ],
-  opinions: [
-    {title:"Opini Contoh: Kasus yang Sedang Ramai", date:"2026-11-20", source:"Nama media atau tautan berita", text:"Tulis opini Anda di sini. Sebutkan fakta yang sudah terkonfirmasi, lalu pisahkan dari pendapat pribadi Anda."}
-  ],
-  videos: [
-    {title:"Video ringkasan buku (contoh)", url:"https://www.youtube.com/", note:"Tautan video untuk ringkasan buku."},
-    {title:"Video opini (contoh)", url:"https://www.youtube.com/", note:"Tautan video untuk opini berita."}
-  ]
+  opinions: [],
+  videos: []
 };
 
 /* ===== Kode di bawah ini tidak perlu diubah ===== */
@@ -196,6 +201,7 @@ let user = null, db = null, auth = null;
 if (!demo) {
   firebase.initializeApp(FIREBASE_CONFIG);
   auth = firebase.auth(); db = firebase.firestore(); qmPersist(auth);
+  loadPosts();
   auth.onAuthStateChanged(u => { user = u; renderAuth(); route(); });
 }
 async function load(name) {
@@ -223,14 +229,14 @@ function route() {
   $("#nav").innerHTML = PAGES.map(([k, v]) => `<a href="#${k}" ${k === p ? 'aria-current="page"' : ""}>${v}</a>`).join("");
   const v = $("#view");
   const entry = (i, t, meta, body, img, cap) => `<article class="entry" style="--c:${SP[i % 5][0]}"><div><h3>${esc(t)}</h3><div class="meta">${meta}</div><p>${esc(body)}</p>${img ? `<figure><img src="${esc(img)}" alt="${esc(cap || t)}" loading="lazy">${cap ? `<figcaption class="meta">${esc(cap)}</figcaption>` : ""}</figure>` : ""}</div></article>`;
-  if (p === "buku") v.innerHTML = `<h2>Ringkasan buku</h2>` + CONTENT.books.map((b, i) => entry(i, b.title, `${esc(b.author)} · dibaca ${esc(b.date)}`, b.text, b.image, b.caption)).join("");
-  else if (p === "opini") v.innerHTML = `<h2>Opini</h2>` + CONTENT.opinions.map((o, i) => entry(i + 1, o.title, `${esc(o.date)} · Sumber: ${esc(o.source)}`, o.text, o.image, o.caption)).join("");
-  else if (p === "video") v.innerHTML = `<h2>Video</h2>` + CONTENT.videos.map((x, i) => `<article class="entry" style="--c:${SP[(i + 2) % 5][0]}"><div><h3>${esc(x.title)}</h3><p>${esc(x.note)}</p><p><a class="btn" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">Tonton video</a></p></div></article>`).join("");
+  if (p === "buku") v.innerHTML = `<h2>Ringkasan buku</h2>` + lst(getC("books"), (b, i) => entry(i, b.title, `${esc(b.author)} · dibaca ${esc(b.date)}`, b.text, b.image, b.caption));
+  else if (p === "opini") v.innerHTML = `<h2>Opini</h2>` + lst(getC("opinions"), (o, i) => entry(i + 1, o.title, `${esc(o.date)} · Sumber: ${esc(o.source)}`, o.text, o.image, o.caption));
+  else if (p === "video") v.innerHTML = `<h2>Video</h2>` + lst(getC("videos"), (x, i) => `<article class="entry" style="--c:${SP[(i + 2) % 5][0]}"><div><h3>${esc(x.title)}</h3><p>${esc(x.note)}</p><p><a class="btn" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">Tonton video</a></p></div></article>`);
   else if (p === "aplikasi") renderApp();
   else if (p === "privasi") v.innerHTML = `<h2>Kebijakan privasi</h2><p>Qibar Mandiri hanya menyimpan nama, email Google, dan catatan yang Anda tulis sendiri. Data hanya bisa dilihat oleh akun Anda dan tidak dibagikan ke pihak lain. Anda dapat meminta data Anda dihapus kapan saja dengan menghubungi pemilik web.</p>`;
   else {
     const newest = arr => [...arr].sort((x, y) => String(y.date || "").localeCompare(String(x.date || ""))).slice(0, HL_MAX).map(x => x.title);
-    const hb = newest(CONTENT.books), ho = newest(CONTENT.opinions), hv = newest(CONTENT.videos);
+    const hb = newest(getC("books")), ho = newest(getC("opinions")), hv = newest(getC("videos"));
     const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit","","buku",hb],["Katalog Buku","katalog-buku.html","Cek sebelum membeli","","katalog",[]],["Catatan Kegiatan Harian","aktivitas_harian.html","Pantau aktivitas harian","","aktivitas",[]],["Opini","#opini","Kabar dan kasus yang sedang ramai","","opini",ho],["Video","#video","Versi tontonan","","video",hv]];
     v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.3rem;font-size:.7rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><span class="hl" id="hl-${m[4]}" data-items="${esc(JSON.stringify(m[5]))}"></span><small>${m[2]}</small>${ill(m[4])}</a>`).join("")}${calTile()}</nav>`;
     fitAll();
@@ -238,6 +244,11 @@ function route() {
   }
 }
 
+let POSTS = [];
+const TYPE = {books: "buku", opinions: "opini", videos: "video"};
+const getC = k => [...CONTENT[k], ...POSTS.filter(p => p.type === TYPE[k])].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
+const lst = (arr, fn) => arr.length ? arr.map(fn).join("") : '<p class="meta">Belum ada tulisan di bagian ini.</p>';
+function loadPosts() { db.collection("posts").get().then(sn => { POSTS = sn.docs.map(d => ({id: d.id, ...d.data()})); route(); }).catch(() => {}); }
 const calTips = {};
 function calTile() {
   const d = new Date(), y = d.getFullYear(), m = d.getMonth(), n = new Date(y, m + 1, 0).getDate();
