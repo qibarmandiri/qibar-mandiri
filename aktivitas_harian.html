@@ -70,6 +70,7 @@
 <div class="container" id="loginCard" style="display:none;max-width:480px;margin:40px auto;text-align:center">
     <h2 style="flex-grow:0;margin-bottom:10px">Masuk untuk membuka aktivitas harian</h2>
     <p>Data tersimpan di akun Google Anda dan hanya Anda yang bisa melihatnya. Bisa dibuka dari perangkat mana saja.</p>
+    <label style="display:block;margin:.8rem 0;font-size:.9em"><input type="checkbox" id="ingat" style="width:auto"> Ingat saya di perangkat ini</label>
     <button id="masuk">Masuk dengan Google</button>
 </div>
 
@@ -430,6 +431,18 @@
         event.target.value = '';
     }
 
+function qmIngat() { try { return localStorage.getItem("qm_ingat") === "1"; } catch (e) { return false; } }
+function qmPersist(a) { a.setPersistence(qmIngat() ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION).catch(function () {}); }
+function qmPasangIngat(a) {
+  var c = document.getElementById("ingat"); if (!c) return;
+  c.checked = qmIngat();
+  c.onchange = function () { try { localStorage.setItem("qm_ingat", c.checked ? "1" : "0"); } catch (e) {} qmPersist(a); };
+}
+function qmMasuk(a) {
+  var p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({ prompt: "select_account" });
+  return a.signInWithPopup(p);
+}
     function tampilApp(on) {
         document.getElementById('app').style.display = on ? '' : 'none';
         document.getElementById('loginCard').style.display = on ? 'none' : '';
@@ -443,9 +456,10 @@
     } else {
         firebase.initializeApp(CFG);
         auth = firebase.auth(); db = firebase.firestore();
+        qmPersist(auth); qmPasangIngat(auth);
         try { db.enablePersistence({ synchronizeTabs: true }).catch(() => {}); } catch (e) {}
         document.getElementById('masuk').addEventListener('click', () => {
-            auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => alert("Gagal masuk: " + e.message));
+            qmMasuk(auth).catch(e => alert("Gagal masuk: " + e.message));
         });
         auth.onAuthStateChanged(u => {
             if (u) {

@@ -4,19 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Katalog Buku Saya v1.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;600&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#f6f4ef; --card:#ffffff; --text:#222; --muted:#6b6b6b;
-    --line:#e2ded4; --accent:#2f5d50; --accent-text:#fff;
-    --danger:#b3382c; --warn-bg:#fff4d6; --ok-bg:#e3f2ea;
-  }
-  @media (prefers-color-scheme: dark){
-    :root{
-      --bg:#181a19; --card:#232625; --text:#ece9e2; --muted:#a09d95;
-      --line:#383b39; --accent:#6fb59f; --accent-text:#10201b;
-      --danger:#ee7b6e; --warn-bg:#3d3418; --ok-bg:#1c3328;
-    }
-  }
+  :root{--bg:#EEF1F5;--card:#F8F9FB;--text:#101828;--muted:#566275;--line:#CBD3DE;--accent:#3A5BDB;--accent-text:#fff;--danger:#C2410C;--warn-bg:#FFF1D6;--ok-bg:#E1E8FB;color-scheme:light}
+  @media (prefers-color-scheme:dark){:root{--bg:#0A0E1A;--card:#111729;--text:#EAF0FF;--muted:#8C97B5;--line:#232C45;--accent:#8FB4FF;--accent-text:#0A0E1A;--danger:#FF9B7A;--warn-bg:#3A2E10;--ok-bg:#17223F;color-scheme:dark}}
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--text);
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.4}
@@ -87,6 +80,31 @@
   .empty{text-align:center;color:var(--muted);padding:24px 0}
   .count{color:var(--muted);font-size:.85rem}
   @media (max-width:520px){ .grid{grid-template-columns:1fr} }
+  /* Tema Qibar Mandiri */
+  body{font-family:Sora,system-ui,sans-serif;font-weight:300;line-height:1.6}
+  h1{font-size:clamp(1.6rem,5vw,2.2rem);font-weight:300;letter-spacing:-.03em}
+  .card h2,dialog h2{font-weight:600;letter-spacing:-.01em}
+  .card{border-radius:16px}
+  button{border-radius:999px;font-weight:600;font-size:.9rem}
+  input[type=text],input[type=number],input[type=search],select{border-radius:12px;background:var(--card);font-family:inherit;font-weight:300}
+  th{font-weight:600}
+  @media (max-width:699px){
+    .tablewrap{max-height:none;overflow:visible;cursor:default}
+    table,thead,tbody,tr,td{display:block;min-width:0!important;width:auto}
+    thead{display:none}
+    tbody tr{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.75rem 1rem;margin:0 0 .75rem}
+    td{border:0;padding:.15rem 0;display:flex;gap:.75rem;font-size:.9rem}
+    td::before{color:var(--muted);min-width:5.2rem;flex:none}
+    td:nth-child(1){display:none}
+    td:nth-child(2){font-weight:600;font-size:1.05rem;padding-bottom:.4rem}
+    td:nth-child(3)::before{content:"Author"}td:nth-child(4)::before{content:"Terbit"}td:nth-child(5)::before{content:"Cetak"}
+    td:nth-child(6)::before{content:"Cetakan ke"}td:nth-child(7)::before{content:"Penerbit"}td:nth-child(8)::before{content:"ISBN"}
+    td:nth-child(9)::before{content:"Kategori"}td:nth-child(10)::before{content:"Lokasi"}td:nth-child(11)::before{content:"Catatan"}
+    td.cat input{min-width:0;width:100%;flex:1}
+    td.act{justify-content:flex-end;padding-top:.4rem}
+    td.empty{display:block!important}
+    td.empty::before{content:none}
+  }
 </style>
 </head>
 <body>
@@ -98,6 +116,7 @@
   <div class="card" id="loginCard" style="display:none">
     <h2>Masuk untuk membuka katalog</h2>
     <p class="sub">Katalog tersimpan di akun Google Anda dan hanya Anda yang bisa melihatnya.</p>
+    <label style="display:block;margin:.8rem 0;font-size:.9em"><input type="checkbox" id="ingat" style="width:auto"> Ingat saya di perangkat ini</label>
     <button class="primary" id="masuk">Masuk dengan Google</button>
   </div>
 
@@ -585,6 +604,18 @@
     if(bergeser){ e.stopPropagation(); e.preventDefault(); bergeser = false; }
   },true);
 
+function qmIngat() { try { return localStorage.getItem("qm_ingat") === "1"; } catch (e) { return false; } }
+function qmPersist(a) { a.setPersistence(qmIngat() ? firebase.auth.Auth.Persistence.LOCAL : firebase.auth.Auth.Persistence.SESSION).catch(function () {}); }
+function qmPasangIngat(a) {
+  var c = document.getElementById("ingat"); if (!c) return;
+  c.checked = qmIngat();
+  c.onchange = function () { try { localStorage.setItem("qm_ingat", c.checked ? "1" : "0"); } catch (e) {} qmPersist(a); };
+}
+function qmMasuk(a) {
+  var p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({ prompt: "select_account" });
+  return a.signInWithPopup(p);
+}
   function tampilApp(on){
     $("app").style.display = on ? "" : "none";
     $("loginCard").style.display = on ? "none" : "";
@@ -596,9 +627,10 @@
   }else{
     firebase.initializeApp(CFG);
     auth = firebase.auth(); db = firebase.firestore();
+    qmPersist(auth); qmPasangIngat(auth);
     try{ db.enablePersistence({synchronizeTabs:true}).catch(function(){}); }catch(e){}
     $("masuk").addEventListener("click",function(){
-      auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){ alert("Gagal masuk: " + e.message); });
+      qmMasuk(auth).catch(function(e){ alert("Gagal masuk: " + e.message); });
     });
     auth.onAuthStateChanged(function(u){
       if(u){
