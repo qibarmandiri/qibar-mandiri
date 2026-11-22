@@ -105,7 +105,8 @@ button.danger{background:transparent;color:var(--danger);border:1px solid var(--
     <div class="msg" id="pesan"></div>
 
     <h2>Tulisan yang sudah terbit</h2>
-    <p class="note">Tulisan lama yang masih ada di berkas index.html tidak tampil di sini. Hanya yang diterbitkan lewat halaman ini.</p>
+    <div class="row" style="margin:.2rem 0 .8rem"><button class="ghost small" id="ekspor">Ekspor semua tulisan (cadangan)</button></div>
+    <p class="note">Ekspor menghasilkan satu berkas .json berisi semua tulisan beserta fotonya, untuk disimpan sebagai cadangan.</p>
     <div id="daftar"></div>
   </div>
 </div>
@@ -242,6 +243,20 @@ button.danger{background:transparent;color:var(--danger);border:1px solid var(--
   $("jenis").onchange = atur;
   $("simpan").onclick = simpan;
   $("batal").onclick = kosong;
+  $("ekspor").onclick = function () {
+    if (!daftar.length) { pesan("Belum ada tulisan untuk diekspor.", true); return; }
+    var data = daftar.map(function (p) {
+      var o = {};
+      Object.keys(p).forEach(function (k) { o[k] = k === "updatedAt" ? (p[k] && p[k].toDate ? p[k].toDate().toISOString() : null) : p[k]; });
+      return o;
+    });
+    var blob = new Blob([JSON.stringify({diekspor: new Date().toISOString(), jumlah: data.length, tulisan: data}, null, 2)], {type: "application/json"});
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "qibar-mandiri-tulisan-" + hariIni() + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+    pesan(data.length + " tulisan diekspor.");
+  };
   $("hapusFoto").onclick = function () { foto = null; $("foto").value = ""; tampilFoto(); };
   $("foto").onchange = function () {
     var inp = this, f = inp.files[0]; if (!f) return;
