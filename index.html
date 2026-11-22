@@ -38,10 +38,10 @@ main{padding-top:2rem;padding-bottom:5rem;min-height:70vh}
 .menu{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;padding-bottom:.5rem}
 .menu a{--hl:var(--accent);--tm:var(--mute);--sh:rgba(0,0,0,.55);--hi:rgba(255,255,255,.1);display:flex;flex-direction:column;gap:.3rem;min-height:140px;padding:1.1rem 1.2rem;background:linear-gradient(145deg,var(--c1),var(--c2));border:0;border-radius:18px;color:var(--ink);text-decoration:none;box-shadow:inset 0 1px 0 var(--hi),0 1px 0 var(--e),0 2px 0 var(--e),0 3px 0 var(--e),0 4px 0 var(--e),0 14px 20px -8px var(--sh);transition:transform .15s,box-shadow .15s}
 .menu a:nth-child(1){--c1:#26375E;--c2:#1C2A4A;--e:#101A31}
-.menu a:nth-child(2){--c1:#4C3037;--c2:#3C262C;--e:#241519}
-.menu a:nth-child(3){--c1:#23443A;--c2:#1A342C;--e:#0E2019}
-.menu a:nth-child(4){--c1:#4D4429;--c2:#3C3520;--e:#241F10}
-.menu a:nth-child(5){--c1:#3E3059;--c2:#2F2444;--e:#1B1329}
+.menu a:nth-child(4){--c1:#4C3037;--c2:#3C262C;--e:#241519}
+.menu a:nth-child(5){--c1:#23443A;--c2:#1A342C;--e:#0E2019}
+.menu a:nth-child(2){--c1:#4D4429;--c2:#3C3520;--e:#241F10}
+.menu a:nth-child(3){--c1:#3E3059;--c2:#2F2444;--e:#1B1329}
 .menu a:nth-child(6){--c1:#4D2E40;--c2:#3B2232;--e:#22121C}
 .menu a>span:first-child{padding-right:86px;order:1;font-size:1.2rem;font-weight:600;letter-spacing:-.02em}
 .menu a:hover,.menu a:focus-visible{transform:translateY(-4px);box-shadow:inset 0 1px 0 var(--hi),0 1px 0 var(--e),0 2px 0 var(--e),0 3px 0 var(--e),0 4px 0 var(--e),0 20px 26px -8px var(--sh)}
@@ -73,10 +73,10 @@ main{padding-top:2rem;padding-bottom:5rem;min-height:70vh}
 @media (prefers-color-scheme:light){
 .menu a{--hl:#2C3E9E;--tm:#4A566B;--sh:rgba(16,24,40,.28);--hi:rgba(255,255,255,.8)}
 .menu a:nth-child(1){--c1:#E2EAFF;--c2:#C9D8FB;--e:#AEBFEA}
-.menu a:nth-child(2){--c1:#FFE8E0;--c2:#FBD2C5;--e:#E6B3A3}
-.menu a:nth-child(3){--c1:#E4F5E9;--c2:#CDE9D6;--e:#AED2BA}
-.menu a:nth-child(4){--c1:#FFF4D2;--c2:#F9E6AE;--e:#DFC983}
-.menu a:nth-child(5){--c1:#EEE1FC;--c2:#DDC9F4;--e:#C1A8E0}
+.menu a:nth-child(4){--c1:#FFE8E0;--c2:#FBD2C5;--e:#E6B3A3}
+.menu a:nth-child(5){--c1:#E4F5E9;--c2:#CDE9D6;--e:#AED2BA}
+.menu a:nth-child(2){--c1:#FFF4D2;--c2:#F9E6AE;--e:#DFC983}
+.menu a:nth-child(3){--c1:#EEE1FC;--c2:#DDC9F4;--e:#C1A8E0}
 .menu a:nth-child(6){--c1:#FFE3EE;--c2:#F9CBDD;--e:#E2A8C0}
 }
 .entry{padding:1.6rem 0;border-top:1px solid var(--line)}
@@ -104,7 +104,36 @@ input:focus,select:focus{border-color:var(--accent)}
 footer{border-top:1px solid var(--line);color:var(--mute);font-size:.85rem}
 footer .wrap{padding-top:1.25rem;padding-bottom:1.25rem}
 @media (max-width:700px){header .wrap{grid-template-columns:1fr auto}.tgl{grid-column:1/-1;grid-row:2;text-align:left}nav.top{grid-row:3}}
-@media (max-width:560px){.menu{grid-template-columns:1fr}.menu a{min-height:0}}
+/* ===== Tampilan kompak: seluruh halaman depan muat satu layar ===== */
+body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+main{flex:1;width:100%;min-height:0;padding-top:.5rem;padding-bottom:1rem}
+header .wrap{padding-top:.6rem;padding-bottom:.35rem;gap:.1rem 1rem}
+footer .wrap{padding-top:.7rem;padding-bottom:.7rem}
+.hero{padding:.1rem 0 .8rem}
+.hero::before{width:clamp(80px,13vw,120px);top:-8px;right:0}
+.menu{gap:14px;padding-bottom:.25rem}
+.menu a{min-height:0;gap:.15rem;padding:.8rem 1rem;border-radius:16px}
+.menu a>span:first-child{font-size:1.05rem;padding-right:64px}
+.menu small{font-size:.72rem;padding-right:64px;margin-bottom:.3rem}
+.ill{top:10px;right:12px;width:54px;height:54px}
+.menu .hl{font-size:.8rem;line-height:1.45;max-height:2.9em}
+.menu a.cal>span:first-child,.menu a.cal small{padding-right:0}
+.calg{margin-top:.25rem;grid-template-columns:repeat(7,24px);gap:1px;justify-content:center;font-size:.68rem}
+.calg b{font-size:.6rem;line-height:1.4}
+.calg .d{aspect-ratio:auto;width:22px;height:22px;margin:0 auto}
+@media (max-width:560px){
+  main{padding-top:.3rem}
+  .tgl{font-size:.8rem}
+  .menu{grid-template-columns:1fr 1fr;gap:10px}
+  .menu a:nth-child(5),.menu a.cal{grid-column:1/-1}
+  .menu a{padding:.6rem .7rem}
+  .menu a>span:first-child{font-size:.92rem;padding-right:36px}
+  .menu small{display:none}
+  .ill{top:7px;right:7px;width:30px;height:30px}
+  .menu .hl{font-size:.74rem}
+  .menu a.cal>span:first-child{padding-right:0}
+  .menu a.cal small{display:block;padding-right:0;margin-bottom:.15rem}
+}
 @media (prefers-reduced-motion:reduce){.menu a,.ill{transition:none}}
 </style>
 </head>
@@ -202,7 +231,7 @@ function route() {
   else {
     const newest = arr => [...arr].sort((x, y) => String(y.date || "").localeCompare(String(x.date || ""))).slice(0, HL_MAX).map(x => x.title);
     const hb = newest(CONTENT.books), ho = newest(CONTENT.opinions), hv = newest(CONTENT.videos);
-    const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit","","buku",hb],["Opini","#opini","Kabar dan kasus yang sedang ramai","","opini",ho],["Video","#video","Versi tontonan","","video",hv],["Katalog Buku","katalog-buku.html","Cek sebelum membeli","","katalog",[]],["Catatan Kegiatan Harian","aktivitas_harian.html","Pantau aktivitas harian","","aktivitas",[]]];
+    const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit","","buku",hb],["Katalog Buku","katalog-buku.html","Cek sebelum membeli","","katalog",[]],["Catatan Kegiatan Harian","aktivitas_harian.html","Pantau aktivitas harian","","aktivitas",[]],["Opini","#opini","Kabar dan kasus yang sedang ramai","","opini",ho],["Video","#video","Versi tontonan","","video",hv]];
     v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.3rem;font-size:.7rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><span class="hl" id="hl-${m[4]}" data-items="${esc(JSON.stringify(m[5]))}"></span><small>${m[2]}</small>${ill(m[4])}</a>`).join("")}${calTile()}</nav>`;
     fitAll();
     fillHl();
