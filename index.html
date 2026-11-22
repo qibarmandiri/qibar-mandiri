@@ -19,9 +19,13 @@ h2{font-size:clamp(1.8rem,6vw,2.6rem);margin-bottom:2rem}
 h3{font-size:1.4rem;font-weight:600;letter-spacing:-.02em;margin-bottom:.3rem}
 a{color:var(--accent)}
 .wrap{max-width:880px;margin:0 auto;padding:0 1.5rem}
-header .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1.75rem;padding-top:1.25rem;padding-bottom:1.25rem}
+header .wrap{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:.4rem 1.25rem;padding-top:1.1rem;padding-bottom:.9rem}
+.logo{grid-column:1;grid-row:1}
+.tgl{grid-column:2;grid-row:1;text-align:center;font-size:.9rem;color:var(--ink)}
+.tgl b{font-weight:600}
+#auth{grid-column:3;grid-row:1}
 .logo{font-weight:600;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
-nav.top{display:flex;flex-wrap:wrap;gap:1.25rem;flex:1;font-size:.95rem}
+nav.top{grid-column:1/-1;grid-row:2;display:flex;flex-wrap:wrap;gap:1.25rem;font-size:.95rem}
 nav.top a{color:var(--mute);text-decoration:none}
 nav.top a[aria-current="page"]{color:var(--accent)}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
@@ -29,13 +33,14 @@ main{padding-top:2rem;padding-bottom:5rem;min-height:70vh}
 .hero{position:relative;padding:1rem 0 1.5rem}
 .hero::before{content:"";position:absolute;right:-6%;top:0;width:clamp(150px,32vw,300px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent),transparent 68%);opacity:.5;pointer-events:none}
 .hero>*{position:relative}
-.sub{font-size:1.15rem;font-style:italic;color:var(--ink);max-width:30em;margin:0}
-.menu a{display:grid;grid-template-columns:minmax(8.5rem,11rem) 1fr auto;align-items:baseline;gap:1rem;padding:.6rem 0;border-top:1px solid var(--line);font-size:clamp(.85rem,2.2vw,.92rem);letter-spacing:0;color:var(--ink);text-decoration:none;transition:color .2s,padding .2s}
-.menu a:last-child{border-bottom:1px solid var(--line)}
-.menu a:hover,.menu a:focus-visible{color:var(--accent);padding-left:.6rem}
-.menu small{font-size:.75rem;letter-spacing:0;color:var(--mute);text-align:right}
+.sub{font-size:.9rem;font-style:italic;color:var(--ink);max-width:32em;margin:0}
+.menu{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.menu a{display:flex;flex-direction:column;gap:.3rem;min-height:140px;padding:1.1rem 1.2rem;background:var(--surface);border:1px solid var(--line);border-radius:16px;color:var(--ink);text-decoration:none;transition:border-color .2s,transform .2s}
+.menu a>span:first-child{order:1;font-size:1.2rem;font-weight:600;letter-spacing:-.02em}
+.menu a:hover,.menu a:focus-visible{border-color:var(--accent);transform:translateY(-3px)}
+.menu small{order:2;font-size:.78rem;color:var(--mute)}
 #auth input[type=checkbox]{width:1rem;height:1rem;padding:0;accent-color:var(--accent);vertical-align:middle}
-.hl{font-size:.85rem;line-height:1.5;letter-spacing:0;color:var(--accent);text-align:center;min-width:0;max-height:3em;overflow:hidden}
+.hl{order:3;margin-top:auto;font-size:.85rem;line-height:1.5;color:var(--accent);text-align:left;min-width:0;max-height:4.5em;overflow:hidden}
 .entry{padding:1.6rem 0;border-top:1px solid var(--line)}
 .entry p{max-width:36em;margin:.8rem 0 0;white-space:pre-line}
 .entry figure{margin:1.25rem 0 0;max-width:36em}
@@ -60,12 +65,13 @@ input:focus,select:focus{border-color:var(--accent)}
 .note{color:var(--mute);font-size:.9rem;margin:0 0 1.75rem}
 footer{border-top:1px solid var(--line);color:var(--mute);font-size:.85rem}
 footer .wrap{padding-top:1.25rem;padding-bottom:1.25rem}
-@media (max-width:560px){.menu small{display:none}.menu a{grid-template-columns:minmax(6.5rem,8.5rem) 1fr}.hl{text-align:right}}
+@media (max-width:700px){header .wrap{grid-template-columns:1fr auto}.tgl{grid-column:1/-1;grid-row:2;text-align:left}nav.top{grid-row:3}}
+@media (max-width:560px){.menu{grid-template-columns:1fr}.menu a{min-height:0}}
 @media (prefers-reduced-motion:reduce){.menu a{transition:none}}
 </style>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="#beranda">Qibar Mandiri</a><nav class="top" id="nav" aria-label="Menu utama"></nav><div id="auth" class="ui"></div></div></header>
+<header><div class="wrap"><a class="logo" href="#beranda">Qibar Mandiri</a><div class="tgl" id="tgl"></div><div id="auth" class="ui"></div><nav class="top" id="nav" aria-label="Menu utama"></nav></div></header>
 <main class="wrap" id="view"></main>
 <footer><div class="wrap">© <span id="yr"></span> Qibar Mandiri · <a href="#privasi">Kebijakan privasi</a></div></footer>
 
@@ -151,7 +157,7 @@ function route() {
     const newest = arr => [...arr].sort((x, y) => String(y.date || "").localeCompare(String(x.date || ""))).slice(0, HL_MAX).map(x => x.title);
     const hb = newest(CONTENT.books), ho = newest(CONTENT.opinions), hv = newest(CONTENT.videos);
     const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit","","buku",hb],["Opini","#opini","Kabar dan kasus yang sedang ramai","","opini",ho],["Video","#video","Versi tontonan","","video",hv],["Katalog Buku","katalog-buku.html","Cek sebelum membeli","","katalog",[]],["Catatan Kegiatan Harian","aktivitas_harian.html","Pantau aktivitas harian","","aktivitas",[]]];
-    v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.6rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><span class="hl" id="hl-${m[4]}" data-items="${esc(JSON.stringify(m[5]))}"></span><small>${m[2]}</small></a>`).join("")}</nav>`;
+    v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.4rem;font-size:.75rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><span class="hl" id="hl-${m[4]}" data-items="${esc(JSON.stringify(m[5]))}"></span><small>${m[2]}</small></a>`).join("")}</nav>`;
     fitAll();
     fillHl();
   }
@@ -183,11 +189,19 @@ async function fillHl() {
 
 function renderApp() {
   $("#view").innerHTML = `<h2>Aplikasi</h2><nav class="menu" aria-label="Daftar aplikasi">
-    <a href="katalog-buku.html"><span>Katalog Buku</span><span></span><small>Cek sebelum membeli</small></a>
-    <a href="aktivitas_harian.html"><span>Catatan Kegiatan Harian</span><span></span><small>Pantau aktivitas harian</small></a></nav>
+    <a href="katalog-buku.html"><span>Katalog Buku</span><small>Cek sebelum membeli</small></a>
+    <a href="aktivitas_harian.html"><span>Catatan Kegiatan Harian</span><small>Pantau aktivitas harian</small></a></nav>
     <p class="note" style="margin-top:1.5rem">Masuk dengan akun Google di salah satu aplikasi. Datanya tersimpan di cloud dan hanya bisa dilihat oleh akun Anda.</p>`;
 }
 
+function tanggal() {
+  const d = new Date(), P = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+  const n = Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000);
+  const hari = d.toLocaleDateString("id-ID", {weekday: "long"});
+  const sisa = d.toLocaleDateString("id-ID", {day: "numeric", month: "long", year: "numeric"});
+  $("#tgl").innerHTML = `<b>${hari} ${P[(n + 3) % 5]}</b>, ${sisa}`;
+}
+tanggal(); setInterval(tanggal, 60000);
 $("#yr").textContent = new Date().getFullYear();
 window.addEventListener("hashchange", route);
 let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(fitAll, 120); });
