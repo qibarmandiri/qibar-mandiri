@@ -69,6 +69,8 @@ main{padding-top:2rem;padding-bottom:5rem;min-height:70vh}
 .tip.on{opacity:1}
 .tip::after{content:"";position:absolute;left:var(--ax,50%);bottom:-6px;width:10px;height:10px;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateX(-50%) rotate(45deg)}
 .tip.dn::after{bottom:auto;top:-6px;border:0;border-left:1px solid var(--line);border-top:1px solid var(--line)}
+.head{display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}
+.head h2{margin:0}
 .hl{order:3;margin-top:auto;font-size:.85rem;line-height:1.5;color:var(--hl);text-align:left;min-width:0;max-height:4.5em;overflow:hidden}
 @media (prefers-color-scheme:light){
 .menu a{--hl:#2C3E9E;--tm:#4A566B;--sh:rgba(16,24,40,.28);--hi:rgba(255,255,255,.8)}
@@ -150,7 +152,7 @@ footer .wrap{padding-top:.7rem;padding-bottom:.7rem}
 <body>
 <header><div class="wrap"><a class="logo" href="#beranda">Qibar Mandiri</a><div class="tgl" id="tgl"></div><div id="auth" class="ui"></div><nav class="top" id="nav" aria-label="Menu utama"></nav></div></header>
 <main class="wrap" id="view"></main>
-<footer><div class="wrap">© <span id="yr"></span> Qibar Mandiri · <a href="#privasi">Kebijakan privasi</a> · <a href="tulis.html">Tulis</a></div></footer>
+<footer><div class="wrap">© <span id="yr"></span> Qibar Mandiri · <a href="#privasi">Kebijakan privasi</a></div></footer>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -162,9 +164,7 @@ const FIREBASE_CONFIG = window.FIREBASE_CONFIG || null;
 
 /* ===== 2. ISI KONTEN: ubah dan tambah sendiri di sini ===== */
 const CONTENT = {
-  books: [
-    {title:"7 Habits", author:"Stephen Covey", date:"2014", text:"Saya mengetik ulang 7 kebiasaan sebagai tanda bahwa sudah mengingat kembali pokok-pokoknya. Saya mendapatkan training berdasarkan buku ini pada tahun 2014 lalu saat saya bekerja di sebuah perusahaan otomotif di Surabaya.\n\n7 habits oleh Stephen Covey :\n1. Menjadi proaktif, bahwa saya lah yang memiliki kontrol atas diri saya sendiri, bukan orang lain atau lingkungan.\n2. Memulai dari hasil akhir pikiran. Menentukan target akhir, selanjutnya saya membuat rencana peta jalan/blueprint dengan fokus pada tujuan apa yang mau saya capai.\n3. Mendahulukan yang utama. Yang terencana dan penting ada di kuadran 2 (penting tapi tidak mendesak)  yang harus saya prioritaskan. Dibandingkan dengan yang mendesak penting (k1) apalagi tidak penting mendesak (k3) maupun tidak penting dan tidak mendesak (k4)\n4. Saya akan selalu mengupayakan win win solution dalam segala interaksi terkait orang lain, baik dalam hubungan kerja, bisnis, maupun bermasyarakat. Pesan penulis selalu saya ingat, jika tidak ada win win solution, lebih baik no deal. Daripada win lose atau bahkan lose win.\n5. Memahami dulu baru dipahami. Saya memilih mendengar dengan empati dan memahami sudut pandang lawan bicara sebelum saya menyampaikan ide pribadi saya. Saya membiasakan mengulang apa yang disampaikan lawan bicara sebagai konfirmasi apakah saya sudah memahami lawan bicara.\n6. Mewujudkan sinergi dengan mengambil semua sudut pandang, perbedaan ide dan sudut pandang adalah aset untuk dihimpun menjadi kekuatan bersama. Karena bisa jadi 1+1 >2.\n7. Mengasah gergaji. Saya perlu waktu jeda, daripada terus menerus beraktifitas meskipun positip. Karena bisa menurunkan produktifitas. Jeda itu seperti gergaji yg dipakai terus menerus, ada saatnya tumpul, harus jeda, berhenti, diasah dan dipertajam dulu. Saya perlu jeda, istirahat, membaca buku, rekreasi, kumpul keluarga, kumpul dengan teman, dan juga melakukan hobi."}
-  ],
+  books: [],
   opinions: [],
   videos: []
 };
@@ -229,9 +229,9 @@ function route() {
   $("#nav").innerHTML = PAGES.map(([k, v]) => `<a href="#${k}" ${k === p ? 'aria-current="page"' : ""}>${v}</a>`).join("");
   const v = $("#view");
   const entry = (i, t, meta, body, img, cap) => `<article class="entry" style="--c:${SP[i % 5][0]}"><div><h3>${esc(t)}</h3><div class="meta">${meta}</div><p>${esc(body)}</p>${img ? `<figure><img src="${esc(img)}" alt="${esc(cap || t)}" loading="lazy">${cap ? `<figcaption class="meta">${esc(cap)}</figcaption>` : ""}</figure>` : ""}</div></article>`;
-  if (p === "buku") v.innerHTML = `<h2>Ringkasan buku</h2>` + lst(getC("books"), (b, i) => entry(i, b.title, `${esc(b.author)} · dibaca ${esc(b.date)}`, b.text, b.image, b.caption));
-  else if (p === "opini") v.innerHTML = `<h2>Opini</h2>` + lst(getC("opinions"), (o, i) => entry(i + 1, o.title, `${esc(o.date)} · Sumber: ${esc(o.source)}`, o.text, o.image, o.caption));
-  else if (p === "video") v.innerHTML = `<h2>Video</h2>` + lst(getC("videos"), (x, i) => `<article class="entry" style="--c:${SP[(i + 2) % 5][0]}"><div><h3>${esc(x.title)}</h3><p>${esc(x.note)}</p><p><a class="btn" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">Tonton video</a></p></div></article>`);
+  if (p === "buku") v.innerHTML = head("Ringkasan buku", "buku", "Tulis ringkasan buku") + lst(getC("books"), (b, i) => entry(i, b.title, `${esc(b.author)} · dibaca ${esc(b.date)}`, b.text, b.image, b.caption));
+  else if (p === "opini") v.innerHTML = head("Opini", "opini", "Tulis opini") + lst(getC("opinions"), (o, i) => entry(i + 1, o.title, `${esc(o.date)} · Sumber: ${esc(o.source)}`, o.text, o.image, o.caption));
+  else if (p === "video") v.innerHTML = head("Video", "video", "Tulis video") + lst(getC("videos"), (x, i) => `<article class="entry" style="--c:${SP[(i + 2) % 5][0]}"><div><h3>${esc(x.title)}</h3><p>${esc(x.note)}</p><p><a class="btn" href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener">Tonton video</a></p></div></article>`);
   else if (p === "aplikasi") renderApp();
   else if (p === "privasi") v.innerHTML = `<h2>Kebijakan privasi</h2><p>Qibar Mandiri hanya menyimpan nama, email Google, dan catatan yang Anda tulis sendiri. Data hanya bisa dilihat oleh akun Anda dan tidak dibagikan ke pihak lain. Anda dapat meminta data Anda dihapus kapan saja dengan menghubungi pemilik web.</p>`;
   else {
@@ -244,11 +244,15 @@ function route() {
   }
 }
 
-let POSTS = [];
+let POSTS = [], ADMIN_UID = null;
 const TYPE = {books: "buku", opinions: "opini", videos: "video"};
 const getC = k => [...CONTENT[k], ...POSTS.filter(p => p.type === TYPE[k])].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
 const lst = (arr, fn) => arr.length ? arr.map(fn).join("") : '<p class="meta">Belum ada tulisan di bagian ini.</p>';
-function loadPosts() { db.collection("posts").get().then(sn => { POSTS = sn.docs.map(d => ({id: d.id, ...d.data()})); route(); }).catch(() => {}); }
+const head = (h, k, label) => `<div class="head"><h2>${h}</h2>${user && ADMIN_UID && user.uid === ADMIN_UID ? `<a class="btn" href="tulis.html#${k}">${label}</a>` : ""}</div>`;
+function loadPosts() {
+  db.collection("posts").get().then(sn => { POSTS = sn.docs.map(d => ({id: d.id, ...d.data()})); route(); }).catch(() => {});
+  db.collection("config").doc("admin").get().then(d => { ADMIN_UID = d.exists ? d.data().uid : null; route(); }).catch(() => {});
+}
 const calTips = {};
 function calTile() {
   const d = new Date(), y = d.getFullYear(), m = d.getMonth(), n = new Date(y, m + 1, 0).getDate();

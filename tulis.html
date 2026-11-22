@@ -51,6 +51,15 @@ button.danger{background:transparent;color:var(--danger);border:1px solid var(--
     <button id="masuk">Masuk dengan Google</button>
   </div>
 
+  <div class="msg" id="gagal"></div>
+  <div class="card" id="klaim" style="display:none">
+    <p>Belum ada akun penulis di web ini. Jadikan <b id="emailKlaim"></b> sebagai <b>satu-satunya</b> akun yang boleh menerbitkan tulisan?</p>
+    <button id="jadikan">Ya, jadikan akun ini pemilik</button>
+  </div>
+  <div class="card" id="tolak" style="display:none">
+    <p>Akun ini tidak punya izin menulis. Hanya akun pemilik web yang bisa menerbitkan tulisan. Silakan keluar, lalu masuk dengan akun pemilik.</p>
+  </div>
+
   <div id="app" style="display:none">
     <p class="note" id="info"></p>
 
@@ -216,7 +225,7 @@ button.danger{background:transparent;color:var(--danger);border:1px solid var(--
       kosong(); return muat();
     }).catch(function (e) {
       pesan(e.code === "permission-denied"
-        ? "Akun ini belum diizinkan menulis. Pastikan email Anda (" + (user && user.email) + ") sama persis dengan yang tertulis di aturan Firestore."
+        ? "Akun ini tidak diizinkan menulis. Hanya akun pemilik web yang bisa menerbitkan."
         : "Gagal menyimpan: " + e.message, true);
     }).then(function () { $("simpan").disabled = false; });
   }
@@ -238,16 +247,31 @@ button.danger{background:transparent;color:var(--danger);border:1px solid var(--
     var inp = this, f = inp.files[0]; if (!f) return;
     kecilkan(f).then(function (d) { foto = d; tampilFoto(); }).catch(function (e) { pesan(e.message, true); inp.value = ""; });
   };
+  function mulai() {
+    $("klaim").style.display = "none"; $("tolak").style.display = "none"; $("app").style.display = "";
+    $("info").textContent = "Masuk sebagai " + user.email + " (akun pemilik).";
+    kosong();
+    var h = location.hash.replace("#", "");
+    if (NAMA[h]) { $("jenis").value = h; atur(); }
+    muat();
+  }
+  function galat(t) { var e = $("gagal"); e.textContent = t; e.className = "msg show err"; }
+  $("jadikan").onclick = function () {
+    db.collection("config").doc("admin").set({uid: user.uid}).then(mulai)
+      .catch(function (e) { galat("Gagal menetapkan pemilik: " + e.message); });
+  };
   auth.onAuthStateChanged(function (u) {
     user = u;
     $("loginCard").style.display = u ? "none" : "";
-    $("app").style.display = u ? "" : "none";
-    if (u) {
-      $("akun").innerHTML = esc(u.displayName || u.email) + ' <button class="ghost small" id="keluar">Keluar</button>';
-      $("keluar").onclick = function () { auth.signOut(); };
-      $("info").textContent = "Masuk sebagai " + u.email + ". Email inilah yang harus tertulis di aturan Firestore agar Anda boleh menulis.";
-      kosong(); muat();
-    } else { $("akun").textContent = ""; }
+    $("app").style.display = "none"; $("klaim").style.display = "none"; $("tolak").style.display = "none"; $("gagal").className = "msg";
+    if (!u) { $("akun").textContent = ""; return; }
+    $("akun").innerHTML = esc(u.displayName || u.email) + ' <button class="ghost small" id="keluar">Keluar</button>';
+    $("keluar").onclick = function () { auth.signOut(); };
+    db.collection("config").doc("admin").get().then(function (d) {
+      if (!d.exists) { $("emailKlaim").textContent = u.email; $("klaim").style.display = ""; }
+      else if (d.data().uid === u.uid) { mulai(); }
+      else { $("tolak").style.display = ""; }
+    }).catch(function (e) { galat("Gagal memeriksa akun: " + e.message); });
   });
 })();
 </script>
