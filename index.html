@@ -33,14 +33,52 @@ main{padding-top:2rem;padding-bottom:5rem;min-height:70vh}
 .hero{position:relative;padding:1rem 0 1.5rem}
 .hero::before{content:"";position:absolute;right:-6%;top:0;width:clamp(150px,32vw,300px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--accent),transparent 68%);opacity:.5;pointer-events:none}
 .hero>*{position:relative}
-.sub{font-size:.9rem;font-style:italic;color:var(--ink);max-width:32em;margin:0}
-.menu{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
-.menu a{display:flex;flex-direction:column;gap:.3rem;min-height:140px;padding:1.1rem 1.2rem;background:var(--surface);border:1px solid var(--line);border-radius:16px;color:var(--ink);text-decoration:none;transition:border-color .2s,transform .2s}
-.menu a>span:first-child{order:1;font-size:1.2rem;font-weight:600;letter-spacing:-.02em}
-.menu a:hover,.menu a:focus-visible{border-color:var(--accent);transform:translateY(-3px)}
-.menu small{order:2;font-size:.78rem;color:var(--mute)}
+.sub{font-size:clamp(.7rem,1.6vw,.8rem);font-style:italic;color:var(--ink);max-width:32em;margin:0}
+@media (min-width:700px){.sub{white-space:nowrap;max-width:none}}
+.menu{position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:22px;padding-bottom:.5rem}
+.menu a{--hl:var(--accent);--tm:var(--mute);--sh:rgba(0,0,0,.55);--hi:rgba(255,255,255,.1);display:flex;flex-direction:column;gap:.3rem;min-height:140px;padding:1.1rem 1.2rem;background:linear-gradient(145deg,var(--c1),var(--c2));border:0;border-radius:18px;color:var(--ink);text-decoration:none;box-shadow:inset 0 1px 0 var(--hi),0 1px 0 var(--e),0 2px 0 var(--e),0 3px 0 var(--e),0 4px 0 var(--e),0 14px 20px -8px var(--sh);transition:transform .15s,box-shadow .15s}
+.menu a:nth-child(1){--c1:#26375E;--c2:#1C2A4A;--e:#101A31}
+.menu a:nth-child(2){--c1:#4C3037;--c2:#3C262C;--e:#241519}
+.menu a:nth-child(3){--c1:#23443A;--c2:#1A342C;--e:#0E2019}
+.menu a:nth-child(4){--c1:#4D4429;--c2:#3C3520;--e:#241F10}
+.menu a:nth-child(5){--c1:#3E3059;--c2:#2F2444;--e:#1B1329}
+.menu a:nth-child(6){--c1:#4D2E40;--c2:#3B2232;--e:#22121C}
+.menu a>span:first-child{padding-right:86px;order:1;font-size:1.2rem;font-weight:600;letter-spacing:-.02em}
+.menu a:hover,.menu a:focus-visible{transform:translateY(-4px);box-shadow:inset 0 1px 0 var(--hi),0 1px 0 var(--e),0 2px 0 var(--e),0 3px 0 var(--e),0 4px 0 var(--e),0 20px 26px -8px var(--sh)}
+.menu a:active{transform:translateY(3px);box-shadow:inset 0 1px 0 var(--hi),0 1px 0 var(--e),0 6px 10px -6px var(--sh)}
+.menu small{order:2;padding-right:86px;font-size:.78rem;color:var(--tm)}
+.menu a{position:relative}
+.ill{position:absolute;top:14px;right:14px;width:76px;height:76px;transform:rotate(-6deg);filter:drop-shadow(0 4px 3px var(--sh));pointer-events:none;transition:transform .2s}
+.menu a:hover .ill,.menu a:focus-visible .ill{transform:rotate(0) scale(1.1)}
+.ill .c1{fill:#F27D7D}.ill .c2{fill:#F5B83D}.ill .c3{fill:#5B8DEF}.ill .c4{fill:#4CB88A}.ill .c5{fill:#9B6FE0}.ill .c6{fill:#fff}
+.ill .c1,.ill .c2,.ill .c3,.ill .c4,.ill .c5,.ill .c6{stroke:rgba(16,24,40,.25);stroke-width:1.5;stroke-linejoin:round}
+.ill .w,.ill .g,.ill .k,.ill .hd{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ill .w{stroke:#fff;stroke-width:2.5}.ill .g{stroke:#3DAA7D;stroke-width:4}.ill .k{stroke:rgba(16,24,40,.45);stroke-width:2.5}.ill .hd{stroke:#2BB3C0;stroke-width:4}
+.ill .lens{fill:rgba(255,255,255,.6);stroke:#2BB3C0;stroke-width:3.5}
 #auth input[type=checkbox]{width:1rem;height:1rem;padding:0;accent-color:var(--accent);vertical-align:middle}
-.hl{order:3;margin-top:auto;font-size:.85rem;line-height:1.5;color:var(--accent);text-align:left;min-width:0;max-height:4.5em;overflow:hidden}
+.menu a.cal>span:first-child,.menu a.cal small{padding-right:0}
+.calg{order:3;margin-top:.5rem;display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;font-size:.72rem}
+.calg b{font-weight:600;color:var(--tm);font-size:.65rem}
+.calg .d{aspect-ratio:1;display:grid;place-items:center;border-radius:50%;line-height:1}
+.calg .now{box-shadow:inset 0 0 0 1.5px var(--ink)}
+.calg .s{background:#4C74E0;color:#fff;font-weight:600}
+.calg .e{background:#E8793A;color:#fff;font-weight:600}
+.calg .s.e{background:linear-gradient(135deg,#4C74E0 50%,#E8793A 50%)}
+.calg [data-t]{cursor:pointer}
+.tip{position:fixed;z-index:50;max-width:260px;padding:.55rem .75rem;border-radius:10px;background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:0 10px 24px -8px rgba(0,0,0,.45);font-size:.8rem;line-height:1.5;pointer-events:none;opacity:0;transition:opacity .12s}
+.tip.on{opacity:1}
+.tip::after{content:"";position:absolute;left:var(--ax,50%);bottom:-6px;width:10px;height:10px;background:var(--surface);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:translateX(-50%) rotate(45deg)}
+.tip.dn::after{bottom:auto;top:-6px;border:0;border-left:1px solid var(--line);border-top:1px solid var(--line)}
+.hl{order:3;margin-top:auto;font-size:.85rem;line-height:1.5;color:var(--hl);text-align:left;min-width:0;max-height:4.5em;overflow:hidden}
+@media (prefers-color-scheme:light){
+.menu a{--hl:#2C3E9E;--tm:#4A566B;--sh:rgba(16,24,40,.28);--hi:rgba(255,255,255,.8)}
+.menu a:nth-child(1){--c1:#E2EAFF;--c2:#C9D8FB;--e:#AEBFEA}
+.menu a:nth-child(2){--c1:#FFE8E0;--c2:#FBD2C5;--e:#E6B3A3}
+.menu a:nth-child(3){--c1:#E4F5E9;--c2:#CDE9D6;--e:#AED2BA}
+.menu a:nth-child(4){--c1:#FFF4D2;--c2:#F9E6AE;--e:#DFC983}
+.menu a:nth-child(5){--c1:#EEE1FC;--c2:#DDC9F4;--e:#C1A8E0}
+.menu a:nth-child(6){--c1:#FFE3EE;--c2:#F9CBDD;--e:#E2A8C0}
+}
 .entry{padding:1.6rem 0;border-top:1px solid var(--line)}
 .entry p{max-width:36em;margin:.8rem 0 0;white-space:pre-line}
 .entry figure{margin:1.25rem 0 0;max-width:36em}
@@ -67,7 +105,7 @@ footer{border-top:1px solid var(--line);color:var(--mute);font-size:.85rem}
 footer .wrap{padding-top:1.25rem;padding-bottom:1.25rem}
 @media (max-width:700px){header .wrap{grid-template-columns:1fr auto}.tgl{grid-column:1/-1;grid-row:2;text-align:left}nav.top{grid-row:3}}
 @media (max-width:560px){.menu{grid-template-columns:1fr}.menu a{min-height:0}}
-@media (prefers-reduced-motion:reduce){.menu a{transition:none}}
+@media (prefers-reduced-motion:reduce){.menu a,.ill{transition:none}}
 </style>
 </head>
 <body>
@@ -114,6 +152,14 @@ function qmMasuk(a) {
   p.setCustomParameters({ prompt: "select_account" });
   return a.signInWithPopup(p);
 }
+const ILL = {
+  buku: '<rect x="8" y="42" width="48" height="12" rx="3" class="c3"/><rect x="12" y="29" width="42" height="12" rx="3" class="c2"/><rect x="10" y="16" width="44" height="12" rx="3" class="c1"/><path d="M16 48h28M20 35h24M18 22h26" class="w"/>',
+  opini: '<path d="M38 36h16a4 4 0 0 1 4 4v12a4 4 0 0 1-4 4h-2v6l-8-6H38a4 4 0 0 1-4-4V40a4 4 0 0 1 4-4z" class="c1"/><path d="M10 8h44a4 4 0 0 1 4 4v24a4 4 0 0 1-4 4H32L20 50V40H10a4 4 0 0 1-4-4V12a4 4 0 0 1 4-4z" class="c5"/><path d="M16 20h32M16 28h20" class="w"/>',
+  video: '<rect x="6" y="12" width="52" height="36" rx="6" class="c3"/><path d="M28 21l14 9-14 9z" class="c2"/><rect x="20" y="52" width="24" height="4" rx="2" class="c6"/>',
+  katalog: '<rect x="6" y="14" width="8" height="30" rx="2" class="c4"/><rect x="16" y="20" width="8" height="24" rx="2" class="c2"/><rect x="26" y="12" width="8" height="32" rx="2" class="c1"/><path d="M4 46h30" class="k"/><circle cx="44" cy="38" r="10" class="lens"/><path d="M52 46l8 8" class="hd"/>',
+  aktivitas: '<rect x="8" y="12" width="48" height="44" rx="6" class="c6"/><path d="M8 18a6 6 0 0 1 6-6h36a6 6 0 0 1 6 6v7H8z" class="c1"/><path d="M20 8v8M44 8v8" class="k"/><path d="M17 38l5 5 8-10" class="g"/><path d="M37 38h11M37 47h11" class="k"/>'
+};
+const ill = k => `<svg class="ill" viewBox="0 0 64 64" aria-hidden="true">${ILL[k] || ""}</svg>`;
 const HL_MAX = 10; /* batas maksimal judul terbaru di halaman depan; yang tampil menyesuaikan lebar tempat */
 const demo = !FIREBASE_CONFIG;
 let user = null, db = null, auth = null;
@@ -157,11 +203,51 @@ function route() {
     const newest = arr => [...arr].sort((x, y) => String(y.date || "").localeCompare(String(x.date || ""))).slice(0, HL_MAX).map(x => x.title);
     const hb = newest(CONTENT.books), ho = newest(CONTENT.opinions), hv = newest(CONTENT.videos);
     const M = [["Ringkasan Buku","#buku","Isi buku dalam beberapa menit","","buku",hb],["Opini","#opini","Kabar dan kasus yang sedang ramai","","opini",ho],["Video","#video","Versi tontonan","","video",hv],["Katalog Buku","katalog-buku.html","Cek sebelum membeli","","katalog",[]],["Catatan Kegiatan Harian","aktivitas_harian.html","Pantau aktivitas harian","","aktivitas",[]]];
-    v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.4rem;font-size:.75rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><span class="hl" id="hl-${m[4]}" data-items="${esc(JSON.stringify(m[5]))}"></span><small>${m[2]}</small></a>`).join("")}</nav>`;
+    v.innerHTML = `<section class="hero"><p class="sub">“Seorang terpelajar harus sudah berbuat adil sejak dalam pikiran, apalagi dalam perbuatan”</p><p class="meta" style="margin-top:.3rem;font-size:.7rem">Pramoedya Ananta Toer</p></section><nav class="menu" aria-label="Bagian web">${M.map(m => `<a href="${m[1]}" ${m[3] ? `data-tab="${m[3]}"` : ""}><span>${m[0]}</span><span class="hl" id="hl-${m[4]}" data-items="${esc(JSON.stringify(m[5]))}"></span><small>${m[2]}</small>${ill(m[4])}</a>`).join("")}${calTile()}</nav>`;
     fitAll();
     fillHl();
   }
 }
+
+const calTips = {};
+function calTile() {
+  const d = new Date(), y = d.getFullYear(), m = d.getMonth(), n = new Date(y, m + 1, 0).getDate();
+  const off = (new Date(y, m, 1).getDay() + 6) % 7, pad = x => String(x).padStart(2, "0");
+  let cells = ["S", "S", "R", "K", "J", "S", "M"].map(x => `<b>${x}</b>`).join("") + "<i></i>".repeat(off);
+  for (let i = 1; i <= n; i++) cells += `<span class="d${i === d.getDate() ? " now" : ""}" data-d="${y}-${pad(m + 1)}-${pad(i)}">${i}</span>`;
+  const nama = d.toLocaleDateString("id-ID", {month: "long", year: "numeric"});
+  return `<a href="aktivitas_harian.html" class="cal" aria-label="Kalender kegiatan ${nama}"><span>${nama}</span><small>Tanggal mulai dan target selesai</small><div class="calg">${cells}</div></a>`;
+}
+function markCal(items) {
+  const d = new Date(), pre = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-`;
+  Object.keys(calTips).forEach(k => delete calTips[k]);
+  document.querySelectorAll(".calg .d").forEach(c => { c.classList.remove("s", "e"); c.removeAttribute("data-t"); });
+  items.forEach(it => {
+    const sj = String(it.subjek || "").trim(); if (!sj || sj === "Subjek baru...") return;
+    [["tanggalMulai", "s"], ["tanggalSelesai", "e"]].forEach(([f, k]) => {
+      const dt = String(it[f] || ""); if (!dt.startsWith(pre)) return;
+      const c = document.querySelector(`.calg [data-d="${dt}"]`); if (!c) return;
+      c.classList.add(k); c.setAttribute("data-t", "1");
+      (calTips[dt] = calTips[dt] || []).push({k, s: sj, done: it.status !== "open"});
+    });
+  });
+}
+const tipEl = document.createElement("div");
+tipEl.className = "tip"; tipEl.setAttribute("role", "tooltip"); document.body.appendChild(tipEl);
+function showTip(c) {
+  const t = calTips[c.dataset.d]; if (!t) return;
+  const fl = col => `<svg width="12" height="12" viewBox="0 0 12 12" style="color:${col};vertical-align:-1px" aria-hidden="true"><path d="M2 1v10M2 1h8l-2 2.5L10 6H2" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>`;
+  tipEl.innerHTML = t.slice(0, 5).map(x => `<div>${fl(x.k === "s" ? "#4C74E0" : "#E8793A")} <b>${x.k === "s" ? "Mulai" : "Target"}</b>: ${esc(x.s)}${x.done ? " (selesai)" : ""}</div>`).join("") + (t.length > 5 ? `<div>+${t.length - 5} lagi</div>` : "");
+  tipEl.classList.add("on");
+  const r = c.getBoundingClientRect(), w = tipEl.offsetWidth, h = tipEl.offsetHeight;
+  const x = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), innerWidth - w - 8), up = r.top > h + 16;
+  tipEl.style.left = x + "px"; tipEl.style.top = (up ? r.top - h - 10 : r.bottom + 10) + "px";
+  tipEl.style.setProperty("--ax", (r.left + r.width / 2 - x) + "px"); tipEl.classList.toggle("dn", !up);
+}
+const hideTip = () => tipEl.classList.remove("on");
+document.addEventListener("mouseover", e => { const c = e.target.closest && e.target.closest(".calg [data-t]"); c ? showTip(c) : hideTip(); });
+document.addEventListener("click", e => { const c = e.target.closest && e.target.closest(".calg [data-t]"); if (c) { e.preventDefault(); showTip(c); } else hideTip(); });
+window.addEventListener("scroll", hideTip, {passive: true});
 
 function fitHl(el) {
   if (!el) return;
@@ -180,6 +266,7 @@ async function fillHl() {
     const b = await load("katalog");
     setHl("katalog", b.slice(-HL_MAX).reverse().map(x => x.judul).filter(Boolean));
     const a = await load("aktivitas");
+    markCal(a);
     const open = a.filter(x => x.status === "open");
     const src = (open.length ? open : a).slice().sort((x, y) => String(y.tanggalMulai || "").localeCompare(String(x.tanggalMulai || "")));
     setHl("aktivitas", src.map(x => x.subjek).filter(x => x && x !== "Subjek baru...").slice(0, HL_MAX));
@@ -189,8 +276,8 @@ async function fillHl() {
 
 function renderApp() {
   $("#view").innerHTML = `<h2>Aplikasi</h2><nav class="menu" aria-label="Daftar aplikasi">
-    <a href="katalog-buku.html"><span>Katalog Buku</span><small>Cek sebelum membeli</small></a>
-    <a href="aktivitas_harian.html"><span>Catatan Kegiatan Harian</span><small>Pantau aktivitas harian</small></a></nav>
+    <a href="katalog-buku.html"><span>Katalog Buku</span><small>Cek sebelum membeli</small>${ill("katalog")}</a>
+    <a href="aktivitas_harian.html"><span>Catatan Kegiatan Harian</span><small>Pantau aktivitas harian</small>${ill("aktivitas")}</a></nav>
     <p class="note" style="margin-top:1.5rem">Masuk dengan akun Google di salah satu aplikasi. Datanya tersimpan di cloud dan hanya bisa dilihat oleh akun Anda.</p>`;
 }
 
